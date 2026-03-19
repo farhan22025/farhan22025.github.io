@@ -160,13 +160,43 @@ window.portfolioKnowledgeBase = [
     links: ["#contact"]
   },
   {
+    id: "resume-download",
+    category: "contact",
+    question: "Can I view or download Farhan's resume?",
+    aliases: ["resume pdf", "cv download", "open resume", "view cv"],
+    keywords: ["resume", "cv", "pdf", "download", "view"],
+    answer:
+      "Yes. The portfolio now includes a direct resume button that opens Farhan's CV as a PDF from the live site.",
+    links: ["#contact", "#home"]
+  },
+  {
+    id: "facebook-link",
+    category: "contact",
+    question: "Does Farhan have a Facebook profile link here?",
+    aliases: ["facebook button", "facebook profile", "find facebook"],
+    keywords: ["facebook", "profile", "social", "button"],
+    answer:
+      "Yes. The site now includes a Facebook profile button so visitors can reach Farhan through Facebook as well.",
+    links: ["#contact", "#home"]
+  },
+  {
+    id: "whatsapp-business",
+    category: "contact",
+    question: "Can I contact Farhan on WhatsApp Business?",
+    aliases: ["whatsapp chat", "whatsapp business button", "message on whatsapp"],
+    keywords: ["whatsapp", "business", "chat", "message", "contact"],
+    answer:
+      "Yes. The portfolio includes a WhatsApp Business button that opens a direct chat with a prefilled introduction message.",
+    links: ["#contact", "#home"]
+  },
+  {
     id: "resume-availability",
     category: "contact",
     question: "Is a resume available on this site?",
     aliases: ["can i download a cv", "resume link", "cv available"],
     keywords: ["resume", "cv", "download", "pdf"],
     answer:
-      "A resume download is not currently shown on the site. For now, the portfolio itself acts as the main summary, and direct contact is the best next step.",
+      "Yes. A resume PDF is now available directly from the live portfolio through the resume buttons in the hero and contact sections.",
     links: ["#contact", "#about"]
   },
   {

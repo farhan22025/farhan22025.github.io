@@ -417,6 +417,13 @@ html[data-theme="light"] .nav {
   box-shadow: 0 20px 38px rgba(12, 126, 169, 0.28);
 }
 
+.button--secondary {
+  color: var(--text);
+  border-color: rgba(64, 211, 200, 0.22);
+  background: linear-gradient(135deg, rgba(64, 211, 200, 0.16), rgba(46, 197, 255, 0.1));
+  box-shadow: 0 16px 34px rgba(12, 126, 169, 0.16);
+}
+
 .button--ghost {
   color: var(--text);
   border-color: var(--line);
@@ -439,6 +446,38 @@ html[data-theme="light"] .nav {
 .contact-card:hover strong,
 .social-links a:hover {
   color: var(--accent);
+}
+
+.hero-socials,
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hero-socials {
+  margin-top: 1.2rem;
+}
+
+.hero-socials a,
+.social-links a {
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition),
+    background-color var(--transition);
+}
+
+.hero-socials a:hover,
+.social-links a:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: var(--accent-soft);
 }
 
 .hero-stats,
@@ -888,27 +927,7 @@ html[data-theme="light"] .nav {
 }
 
 .social-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   margin-top: 1.5rem;
-}
-
-.social-links a {
-  padding: 0.75rem 1rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
-  transition:
-    color var(--transition),
-    border-color var(--transition),
-    transform var(--transition);
-}
-
-.social-links a:hover {
-  transform: translateY(-2px);
-  border-color: var(--line-strong);
 }
 
 .contact-form {
@@ -1399,6 +1418,7 @@ html[data-theme="light"] .chatbot-launcher {
   }
 
   .hero-actions,
+  .hero-socials,
   .map-legend,
   .footer-layout {
     flex-direction: column;

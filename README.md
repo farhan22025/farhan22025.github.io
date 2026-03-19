@@ -7,7 +7,8 @@ A modern, minimal, and fully responsive personal portfolio website built with pl
 ```text
 E:\Project_portfolio11
 |-- assets
-|   `-- favicon.svg
+|   |-- favicon.svg
+|   `-- farhan-cv-resume.pdf
 |-- chatbot-data.js
 |-- index.html
 |-- Portfolio-Projects
@@ -29,6 +30,7 @@ E:\Project_portfolio11
 - Dark/light mode toggle with saved preference
 - Interactive Leaflet map with Dhaka and DIU Ashulia markers
 - In-site chatbot with a curated portfolio question bank
+- Direct resume, Facebook, and WhatsApp contact buttons
 - Frontend-only contact form
 
 ## Run Locally
