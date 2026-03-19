@@ -1,4 +1,4 @@
-# Farhan Alam Portfolio
+# Farhan Alam's Portfolio
 
 A modern, minimal, and fully responsive personal portfolio website built with plain HTML, CSS, and JavaScript for easy GitHub Pages deployment.
 
