@@ -1,0 +1,13 @@
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Local scratch notes
+Prompt to Codex.txt

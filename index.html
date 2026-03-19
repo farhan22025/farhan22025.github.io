@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farhan Alam | Entry-Level Data Engineer</title>
+    <meta
+      name="description"
+      content="A modern portfolio for Farhan Alam, an aspiring data engineer and software engineering student focused on backend systems, data workflows, and scalable solutions."
+    />
+    <meta name="theme-color" content="#071520" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem("farhan-theme");
+        if (savedTheme) {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      })();
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-grid" aria-hidden="true"></div>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <div class="ambient ambient-three" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <nav class="nav container">
+        <a class="brand" href="#home" aria-label="Farhan Alam home">
+          <span class="brand-mark">FA</span>
+          <span class="brand-copy">
+            <strong>Farhan Alam</strong>
+            <small>Data Engineering Track</small>
+          </span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="nav-menu" id="nav-menu">
+          <a class="nav-link active" href="#home">Home</a>
+          <a class="nav-link" href="#about">About</a>
+          <a class="nav-link" href="#skills">Skills</a>
+          <a class="nav-link" href="#workspace">Workspace</a>
+          <a class="nav-link" href="#projects">Projects</a>
+          <a class="nav-link" href="#activities">Activities</a>
+          <a class="nav-link" href="#education">Education</a>
+          <a class="nav-link" href="#map-section">Map</a>
+          <a class="nav-link" href="#contact">Contact</a>
+          <button class="theme-toggle" type="button" aria-label="Toggle color theme">
+            <span class="theme-toggle__icon" aria-hidden="true">DK</span>
+            <span class="theme-toggle__label">Dark</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero section" id="home">
+        <div class="container hero-layout">
+          <div class="hero-copy reveal">
+            <span class="eyebrow">Entry-Level Data Engineer | Software Engineering Student @ DIU</span>
+            <h1>Farhan Alam</h1>
+            <p class="hero-subtitle">
+              <span class="hero-subtitle__static">I build</span>
+              <span id="typing-text">scalable data-ready systems.</span>
+              <span class="typing-cursor" aria-hidden="true"></span>
+            </p>
+            <p class="hero-description">
+              Aspiring data engineer from Dhaka with a growing focus on backend systems, clean
+              database design, and practical solutions that turn raw information into reliable
+              products.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button--primary" href="#projects">View Projects</a>
+              <a class="button button--ghost" href="#contact">Contact Me</a>
+            </div>
+
+            <div class="hero-meta">
+              <a href="mailto:alam22205341122@diu.edu.bd">alam22205341122@diu.edu.bd</a>
+              <span>Dhaka, Bangladesh</span>
+              <a href="tel:+8801610772313">+8801610772313</a>
+            </div>
+
+            <div class="hero-stats">
+              <article class="glass-card stat-card">
+                <span class="stat-value">4+</span>
+                <span class="stat-label">Academic projects built</span>
+              </article>
+              <article class="glass-card stat-card">
+                <span class="stat-value">2026</span>
+                <span class="stat-label">Expected graduation year</span>
+              </article>
+              <article class="glass-card stat-card">
+                <span class="stat-value">3.06</span>
+                <span class="stat-label">Current CGPA</span>
+              </article>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal">
+            <div class="glass-card dashboard-card">
+              <div class="dashboard-card__head">
+                <div>
+                  <span class="status-badge">
+                    <span class="status-badge__dot"></span>
+                    Open to internships and entry-level opportunities
+                  </span>
+                  <h2>Career Snapshot</h2>
+                </div>
+                <span class="mini-pill">Backend + Data</span>
+              </div>
+
+              <div class="insight-grid">
+                <article class="insight-card">
+                  <span class="insight-label">Focus Area</span>
+                  <strong>Data Engineering</strong>
+                  <small>Structured data pipelines and modeling mindset</small>
+                </article>
+                <article class="insight-card">
+                  <span class="insight-label">Strength</span>
+                  <strong>System Thinking</strong>
+                  <small>ERD, UML, data flow, backend logic</small>
+                </article>
+                <article class="insight-card">
+                  <span class="insight-label">Environment</span>
+                  <strong>Academic + Practical</strong>
+                  <small>Projects grounded in software engineering coursework</small>
+                </article>
+                <article class="insight-card">
+                  <span class="insight-label">Goal</span>
+                  <strong>Real-World Impact</strong>
+                  <small>Contribute to reliable, data-driven systems</small>
+                </article>
+              </div>
+
+              <div class="signal-block">
+                <div class="signal-block__header">
+                  <span>Current learning momentum</span>
+                  <strong>Balanced across engineering and analytics</strong>
+                </div>
+                <div class="signal-list">
+                  <div class="signal-row">
+                    <span>Database design</span>
+                    <span>86%</span>
+                  </div>
+                  <div class="signal-row">
+                    <span>Backend fundamentals</span>
+                    <span>82%</span>
+                  </div>
+                  <div class="signal-row">
+                    <span>Data handling workflows</span>
+                    <span>78%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="container">
+          <div class="section-heading reveal">
+            <span class="section-kicker">About Me</span>
+            <h2>Software engineering discipline with a clear data-first direction.</h2>
+            <p>
+              I am a final-year Software Engineering student at Daffodil International University,
+              building a strong foundation in backend development, database systems, and scalable
+              application design.
+            </p>
+          </div>
+
+          <div class="about-grid">
+            <article class="glass-card about-card reveal">
+              <h3>Professional Summary</h3>
+              <p>
+                My interests sit at the intersection of data and software systems. I enjoy working
+                on projects where structured thinking, clean architecture, and reliable data flow
+                matter just as much as the final interface.
+              </p>
+              <p>
+                Through academic projects and student activities, I have been strengthening my
+                understanding of how data is collected, modeled, stored, and used inside real
+                applications.
+              </p>
+            </article>
+
+            <article class="glass-card about-card reveal">
+              <h3>Career Objective</h3>
+              <p>
+                My goal is to begin my career as a Data Engineer or Backend Software Engineer where
+                I can apply my academic foundation, keep learning fast, and help build efficient,
+                data-driven systems that scale with confidence.
+              </p>
+              <div class="tag-list">
+                <span>Data Engineering</span>
+                <span>Backend Development</span>
+                <span>Scalability</span>
+                <span>System Design</span>
+                <span>Database Thinking</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="skills">
+        <div class="container">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Skills</span>
+            <h2>Core capabilities shaped by coursework, practice, and project work.</h2>
+            <p>
+              A blend of programming, database knowledge, core computer science concepts, and
+              creative tooling that supports both product building and structured problem solving.
+            </p>
+          </div>
+
+          <div class="skills-grid">
+            <article class="glass-card skill-card reveal">
+              <div class="card-heading">
+                <h3>Programming</h3>
+                <span class="card-chip">Code</span>
+              </div>
+              <div class="skill-list">
+                <div class="skill-item" data-progress="78">
+                  <div class="skill-item__head">
+                    <span>Python</span>
+                    <span>78%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="74">
+                  <div class="skill-item__head">
+                    <span>Java</span>
+                    <span>74%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="72">
+                  <div class="skill-item__head">
+                    <span>PHP</span>
+                    <span>72%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="69">
+                  <div class="skill-item__head">
+                    <span>C</span>
+                    <span>69%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass-card skill-card reveal">
+              <div class="card-heading">
+                <h3>Database &amp; Data</h3>
+                <span class="card-chip">Storage</span>
+              </div>
+              <div class="skill-list">
+                <div class="skill-item" data-progress="84">
+                  <div class="skill-item__head">
+                    <span>MySQL</span>
+                    <span>84%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="86">
+                  <div class="skill-item__head">
+                    <span>SQL</span>
+                    <span>86%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="77">
+                  <div class="skill-item__head">
+                    <span>Excel</span>
+                    <span>77%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="75">
+                  <div class="skill-item__head">
+                    <span>Google Sheets</span>
+                    <span>75%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass-card skill-card reveal">
+              <div class="card-heading">
+                <h3>Concepts</h3>
+                <span class="card-chip">Foundations</span>
+              </div>
+              <div class="skill-list">
+                <div class="skill-item" data-progress="85">
+                  <div class="skill-item__head">
+                    <span>OOP</span>
+                    <span>85%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="76">
+                  <div class="skill-item__head">
+                    <span>Data Structures</span>
+                    <span>76%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="80">
+                  <div class="skill-item__head">
+                    <span>System Design</span>
+                    <span>80%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass-card skill-card reveal">
+              <div class="card-heading">
+                <h3>Tools</h3>
+                <span class="card-chip">Workflow</span>
+              </div>
+              <div class="skill-list">
+                <div class="skill-item" data-progress="70">
+                  <div class="skill-item__head">
+                    <span>Git</span>
+                    <span>70%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="74">
+                  <div class="skill-item__head">
+                    <span>Canva</span>
+                    <span>74%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="68">
+                  <div class="skill-item__head">
+                    <span>Adobe Tools</span>
+                    <span>68%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+                <div class="skill-item" data-progress="73">
+                  <div class="skill-item__head">
+                    <span>SQA Testing</span>
+                    <span>73%</span>
+                  </div>
+                  <div class="skill-track"><span class="skill-fill"></span></div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="projects">
+        <div class="container">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Projects</span>
+            <h2>Academic projects that emphasize logic, structure, and real system thinking.</h2>
+            <p>
+              Each project reflects a different part of my journey, from system modeling and OOP
+              implementation to low-level file handling and machine learning exploration.
+            </p>
+          </div>
+
+          <div class="projects-grid">
+            <article class="glass-card project-card reveal">
+              <span class="project-index">01</span>
+              <h3>Smart Waste Management System</h3>
+              <p>
+                A structured system design project focused on efficient waste tracking, planning,
+                and organized information flow across stakeholders.
+              </p>
+              <div class="tag-list">
+                <span>System Design</span>
+                <span>ERD</span>
+                <span>UML</span>
+                <span>Data Flow</span>
+              </div>
+              <ul class="project-points">
+                <li>Planned system architecture with a strong emphasis on structured data.</li>
+                <li>Prepared ERD, UML diagrams, and data flow representations.</li>
+                <li>Focused on clarity, efficiency, and maintainable design documentation.</li>
+              </ul>
+            </article>
+
+            <article class="glass-card project-card reveal">
+              <span class="project-index">02</span>
+              <h3>Coffee Shop Management System</h3>
+              <p>
+                A Java-based POS application created with object-oriented design principles for
+                transaction handling and smoother shop operations.
+              </p>
+              <div class="tag-list">
+                <span>Java</span>
+                <span>OOP</span>
+                <span>POS</span>
+              </div>
+              <ul class="project-points">
+                <li>Designed a transaction-focused interface for day-to-day order processing.</li>
+                <li>Applied OOP concepts to organize core logic and data flow cleanly.</li>
+                <li>Improved consistency in data handling and operational structure.</li>
+              </ul>
+            </article>
+
+            <article class="glass-card project-card reveal">
+              <span class="project-index">03</span>
+              <h3>Banking Management System</h3>
+              <p>
+                A C project that uses file handling for data persistence and simulates essential
+                banking operations with a practical command-driven workflow.
+              </p>
+              <div class="tag-list">
+                <span>C</span>
+                <span>File Handling</span>
+                <span>Data Persistence</span>
+              </div>
+              <ul class="project-points">
+                <li>Implemented account-related operations using persistent file storage.</li>
+                <li>Strengthened understanding of low-level data management patterns.</li>
+                <li>Built around accuracy, continuity, and operational logic.</li>
+              </ul>
+            </article>
+
+            <article class="glass-card project-card reveal">
+              <span class="project-index">04</span>
+              <h3>Deepfake Detection</h3>
+              <p>
+                An ongoing machine learning thesis project exploring manipulated media detection
+                using GPU-assisted experimentation and performance-aware processing.
+              </p>
+              <div class="tag-list">
+                <span>Machine Learning</span>
+                <span>GPU Processing</span>
+                <span>Computer Vision</span>
+              </div>
+              <ul class="project-points">
+                <li>Exploring model behavior for deepfake identification workflows.</li>
+                <li>Using GPU-based experimentation to support faster processing cycles.</li>
+                <li>Connecting software engineering discipline with applied ML research.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="workspace">
+        <div class="container">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Workspace Roadmap</span>
+            <h2>A live folder structure for projects, practice, datasets, and data engineering work.</h2>
+            <p>
+              I have organized a dedicated `Portfolio-Projects` workspace to keep my academic work,
+              personal experiments, structured skill practice, and future data engineering assets in
+              one place. The progress bars below represent current roadmap and build-out progress,
+              not final mastery.
+            </p>
+          </div>
+
+          <div class="workspace-layout">
+            <article class="glass-card folder-tree-card reveal">
+              <div class="card-heading">
+                <h3>Folder Structure</h3>
+                <span class="card-chip">On Disk</span>
+              </div>
+              <div class="tree-lines">
+                <p>Portfolio-Projects/</p>
+                <p>|-- Projects/</p>
+                <p>|   |-- Academic/</p>
+                <p>|   |   |-- Final-Year-Project/</p>
+                <p>|   |   `-- Course-Projects/</p>
+                <p>|   |-- Personal/</p>
+                <p>|   |   |-- Individual-Projects/</p>
+                <p>|   |   `-- Idea-Experiments/</p>
+                <p>|   `-- Collaborative/</p>
+                <p>|-- Skills-Practice/</p>
+                <p>|   |-- Python/</p>
+                <p>|   |   |-- Fundamentals/</p>
+                <p>|   |   |-- Advanced/</p>
+                <p>|   |   |-- Data-Analysis/</p>
+                <p>|   |   `-- Mini-Projects/</p>
+                <p>|   |-- R/</p>
+                <p>|   |   |-- Fundamentals/</p>
+                <p>|   |   |-- Advanced/</p>
+                <p>|   |   |-- Data-Analysis/</p>
+                <p>|   |   `-- Visualization/</p>
+                <p>|   `-- SQL/</p>
+                <p>|       |-- MySQL/</p>
+                <p>|       |   |-- Fundamentals/</p>
+                <p>|       |   |-- Advanced/</p>
+                <p>|       |   `-- Data-Analysis/</p>
+                <p>|       |-- PostgreSQL/</p>
+                <p>|       |   |-- Fundamentals/</p>
+                <p>|       |   |-- Advanced/</p>
+                <p>|       |   `-- Data-Analysis/</p>
+                <p>|       `-- Practice-Queries/</p>
+                <p>|-- Data-Engineering/</p>
+                <p>|   |-- ETL-Pipelines/</p>
+                <p>|   |-- Data-Cleaning/</p>
+                <p>|   |-- Data-Wrangling/</p>
+                <p>|   `-- Data-Modeling/</p>
+                <p>|-- Datasets/</p>
+                <p>|   |-- Raw/</p>
+                <p>|   `-- Processed/</p>
+                <p>|-- Resources/</p>
+                <p>|   |-- Notes/</p>
+                <p>|   |-- Cheatsheets/</p>
+                <p>|   `-- Roadmaps/</p>
+                <p>`-- README.md</p>
+              </div>
+            </article>
+
+            <div class="workspace-progress-stack">
+              <article class="glass-card progress-summary-card reveal">
+                <div class="card-heading">
+                  <h3>Workspace Build Progress</h3>
+                  <span class="card-chip">Structure</span>
+                </div>
+                <div class="skill-list">
+                  <div class="skill-item" data-progress="66">
+                    <div class="skill-item__head">
+                      <span>Projects</span>
+                      <span>66%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="58">
+                    <div class="skill-item__head">
+                      <span>Skills Practice</span>
+                      <span>58%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="46">
+                    <div class="skill-item__head">
+                      <span>Data Engineering</span>
+                      <span>46%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="34">
+                    <div class="skill-item__head">
+                      <span>Datasets</span>
+                      <span>34%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="63">
+                    <div class="skill-item__head">
+                      <span>Resources</span>
+                      <span>63%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="glass-card progress-summary-card reveal">
+                <div class="card-heading">
+                  <h3>Learning Tracks</h3>
+                  <span class="card-chip">Practice</span>
+                </div>
+                <div class="skill-list">
+                  <div class="skill-item" data-progress="74">
+                    <div class="skill-item__head">
+                      <span>Python Track</span>
+                      <span>74%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="26">
+                    <div class="skill-item__head">
+                      <span>R Track</span>
+                      <span>26%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="71">
+                    <div class="skill-item__head">
+                      <span>SQL / MySQL</span>
+                      <span>71%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="49">
+                    <div class="skill-item__head">
+                      <span>PostgreSQL</span>
+                      <span>49%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="glass-card progress-summary-card reveal">
+                <div class="card-heading">
+                  <h3>Project Streams</h3>
+                  <span class="card-chip">Execution</span>
+                </div>
+                <div class="skill-list">
+                  <div class="skill-item" data-progress="61">
+                    <div class="skill-item__head">
+                      <span>Final-Year Project</span>
+                      <span>61%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="76">
+                    <div class="skill-item__head">
+                      <span>Course Projects</span>
+                      <span>76%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="43">
+                    <div class="skill-item__head">
+                      <span>Individual Projects</span>
+                      <span>43%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="37">
+                    <div class="skill-item__head">
+                      <span>Idea Experiments</span>
+                      <span>37%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                  <div class="skill-item" data-progress="28">
+                    <div class="skill-item__head">
+                      <span>Collaborative Work</span>
+                      <span>28%</span>
+                    </div>
+                    <div class="skill-track"><span class="skill-fill"></span></div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="activities">
+        <div class="container">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Experience &amp; Activities</span>
+            <h2>Communities and events that keep my technical growth active.</h2>
+            <p>
+              Beyond coursework, I stay involved through university clubs and volunteer work that
+              expose me to collaboration, problem solving, and technology-focused environments.
+            </p>
+          </div>
+
+          <div class="timeline-grid">
+            <article class="glass-card timeline-card reveal">
+              <span class="timeline-tag">Community</span>
+              <h3>DIU Data Science Club</h3>
+              <p>
+                Learning through a peer-driven environment that strengthens my exposure to SQL,
+                Python, analytics thinking, and data-related workflows.
+              </p>
+            </article>
+            <article class="glass-card timeline-card reveal">
+              <span class="timeline-tag">Innovation</span>
+              <h3>DIU Robotics Club</h3>
+              <p>
+                Participating in a hands-on community around automation, experimentation, and
+                technology-driven problem solving.
+              </p>
+            </article>
+            <article class="glass-card timeline-card reveal">
+              <span class="timeline-tag">Volunteer</span>
+              <h3>Tech Events &amp; Hackathons</h3>
+              <p>
+                Supported coordination and execution of university tech programs, helping teams,
+                participants, and event logistics move smoothly.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="education">
+        <div class="container">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Education</span>
+            <h2>Academic foundation shaped by software engineering and steady progress.</h2>
+            <p>
+              My academic path has strengthened my understanding of software systems while guiding
+              my long-term interest toward data engineering and backend development.
+            </p>
+          </div>
+
+          <div class="education-grid">
+            <article class="glass-card education-card reveal">
+              <span class="timeline-tag">2022 - 2026</span>
+              <h3>B.Sc. in Software Engineering</h3>
+              <p>Daffodil International University</p>
+              <strong>CGPA: 3.06 / 4.00</strong>
+            </article>
+            <article class="glass-card education-card reveal">
+              <span class="timeline-tag">Completed</span>
+              <h3>Cambridge A Levels</h3>
+              <p>St. Loretto School &amp; College</p>
+              <strong>Academic preparation for higher studies in technology</strong>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="map-section">
+        <div class="container map-layout">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Location Map</span>
+            <h2>Based in Dhaka and studying at DIU in Ashulia.</h2>
+            <p>
+              The map highlights my current location in Dhaka and my study location at Daffodil
+              International University, showing the local footprint behind my academic journey.
+            </p>
+            <div class="map-legend">
+              <span><i class="legend-dot legend-dot--home"></i> Current location: Dhaka</span>
+              <span><i class="legend-dot legend-dot--campus"></i> Study location: DIU, Ashulia</span>
+            </div>
+          </div>
+
+          <div class="glass-card map-card reveal">
+            <div id="map" aria-label="Map showing Dhaka and Daffodil International University"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="container contact-layout">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Contact</span>
+            <h2>Let's connect around data, backend systems, and new opportunities.</h2>
+            <p>
+              I'm open to internship opportunities, entry-level roles, and collaborative tech
+              conversations related to software engineering, backend development, and data work.
+            </p>
+
+            <div class="contact-cards">
+              <a class="glass-card contact-card" href="mailto:alam22205341122@diu.edu.bd">
+                <span>Email</span>
+                <strong>alam22205341122@diu.edu.bd</strong>
+              </a>
+              <a class="glass-card contact-card" href="mailto:f05076963@gmail.com">
+                <span>Alternate Email</span>
+                <strong>f05076963@gmail.com</strong>
+              </a>
+              <a class="glass-card contact-card" href="tel:+8801610772313">
+                <span>Phone</span>
+                <strong>+8801610772313</strong>
+              </a>
+              <div class="glass-card contact-card">
+                <span>Location</span>
+                <strong>Dhaka, Bangladesh</strong>
+              </div>
+            </div>
+
+            <div class="social-links">
+              <a href="https://github.com/your-username" target="_blank" rel="noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/your-linkedin" target="_blank" rel="noreferrer">LinkedIn</a>
+            </div>
+          </div>
+
+          <form class="glass-card contact-form reveal" id="contact-form">
+            <div class="form-row">
+              <label>
+                Name
+                <input type="text" name="name" placeholder="Your name" required />
+              </label>
+              <label>
+                Email
+                <input type="email" name="email" placeholder="you@example.com" required />
+              </label>
+            </div>
+            <label>
+              Subject
+              <input type="text" name="subject" placeholder="What would you like to talk about?" required />
+            </label>
+            <label>
+              Message
+              <textarea
+                name="message"
+                rows="6"
+                placeholder="Share your message, idea, or opportunity..."
+                required
+              ></textarea>
+            </label>
+            <button class="button button--primary" type="submit">Send Message</button>
+            <p class="form-note">
+              Frontend demo form. For real inquiries, reach out directly via email or phone.
+            </p>
+            <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-layout">
+        <p>Farhan Alam</p>
+        <p>Entry-Level Data Engineer | Software Engineering Student @ DIU</p>
+        <p>&copy; <span id="current-year"></span> All rights reserved.</p>
+      </div>
+    </footer>
+
+    <div class="chatbot-shell" aria-live="polite">
+      <button
+        class="chatbot-launcher"
+        id="chatbot-launcher"
+        type="button"
+        aria-expanded="false"
+        aria-controls="chatbot-panel"
+      >
+        <span class="chatbot-launcher__dot" aria-hidden="true"></span>
+        <span class="chatbot-launcher__copy">
+          <strong>Ask the Site Bot</strong>
+          <small>Portfolio Q&amp;A assistant</small>
+        </span>
+      </button>
+
+      <section class="chatbot-panel glass-card" id="chatbot-panel" aria-label="Portfolio chatbot">
+        <header class="chatbot-panel__header">
+          <div>
+            <span class="section-kicker">Portfolio Assistant</span>
+            <h2>Ask about Farhan, the projects, or this site.</h2>
+            <p id="chatbot-meta">Loading site knowledge...</p>
+          </div>
+          <button class="chatbot-close" id="chatbot-close" type="button" aria-label="Close chatbot">
+            Close
+          </button>
+        </header>
+
+        <div class="chatbot-messages" id="chatbot-messages"></div>
+
+        <div class="chatbot-suggestions" id="chatbot-suggestions" aria-label="Suggested questions"></div>
+
+        <form class="chatbot-form" id="chatbot-form">
+          <label class="chatbot-form__field">
+            <span class="sr-only">Ask the portfolio chatbot a question</span>
+            <input
+              id="chatbot-input"
+              name="question"
+              type="text"
+              placeholder="Ask about skills, projects, education, contact, or goals..."
+              autocomplete="off"
+            />
+          </label>
+          <button class="button button--primary" type="submit">Ask</button>
+        </form>
+      </section>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+      defer
+    ></script>
+    <script src="chatbot-data.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

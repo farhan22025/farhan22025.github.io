@@ -1,0 +1,692 @@
+const typingTarget = document.getElementById("typing-text");
+const themeToggle = document.querySelector(".theme-toggle");
+const navToggle = document.querySelector(".nav-toggle");
+const navMenu = document.querySelector(".nav-menu");
+const navLinks = document.querySelectorAll(".nav-link");
+const revealItems = document.querySelectorAll(".reveal");
+const skillItems = document.querySelectorAll(".skill-item");
+const form = document.getElementById("contact-form");
+const formStatus = document.getElementById("form-status");
+const yearTarget = document.getElementById("current-year");
+
+const chatbotLauncher = document.getElementById("chatbot-launcher");
+const chatbotPanel = document.getElementById("chatbot-panel");
+const chatbotClose = document.getElementById("chatbot-close");
+const chatbotMessages = document.getElementById("chatbot-messages");
+const chatbotSuggestions = document.getElementById("chatbot-suggestions");
+const chatbotForm = document.getElementById("chatbot-form");
+const chatbotInput = document.getElementById("chatbot-input");
+const chatbotMeta = document.getElementById("chatbot-meta");
+
+const typingPhrases = [
+  "scalable data-ready systems.",
+  "backend workflows with structure.",
+  "clean foundations for analytics.",
+  "toward a career in data engineering."
+];
+
+const defaultSuggestionPrompts = [
+  "Who is Farhan Alam?",
+  "What projects has he built?",
+  "What are his strongest skills?",
+  "Is he open to internships?",
+  "How can I contact him?"
+];
+
+const sectionLabels = {
+  "#home": "Open Home",
+  "#about": "Open About",
+  "#skills": "Open Skills",
+  "#workspace": "Open Workspace",
+  "#projects": "Open Projects",
+  "#activities": "Open Activities",
+  "#education": "Open Education",
+  "#map-section": "Open Map",
+  "#contact": "Open Contact"
+};
+
+const stopWords = new Set([
+  "a",
+  "an",
+  "and",
+  "are",
+  "as",
+  "at",
+  "be",
+  "can",
+  "do",
+  "does",
+  "for",
+  "from",
+  "has",
+  "have",
+  "how",
+  "i",
+  "in",
+  "is",
+  "it",
+  "me",
+  "my",
+  "of",
+  "on",
+  "or",
+  "tell",
+  "that",
+  "the",
+  "this",
+  "to",
+  "what",
+  "where",
+  "which",
+  "who",
+  "why",
+  "with",
+  "you",
+  "your"
+]);
+
+let typingIndex = 0;
+let characterIndex = 0;
+let isDeleting = false;
+
+const mapState = {
+  instance: null,
+  tileLayer: null
+};
+
+const chatbotState = {
+  trainedEntries: [],
+  greeted: false
+};
+
+function normalizeText(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s#]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tokenizeText(text) {
+  return normalizeText(text)
+    .split(" ")
+    .filter(Boolean)
+    .filter((token) => token.length > 1 && !stopWords.has(token));
+}
+
+function uniqueValues(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function typeLoop() {
+  if (!typingTarget) {
+    return;
+  }
+
+  const currentPhrase = typingPhrases[typingIndex];
+  const speed = isDeleting ? 45 : 90;
+
+  typingTarget.textContent = currentPhrase.slice(0, characterIndex);
+
+  if (!isDeleting && characterIndex < currentPhrase.length) {
+    characterIndex += 1;
+    setTimeout(typeLoop, speed);
+    return;
+  }
+
+  if (isDeleting && characterIndex > 0) {
+    characterIndex -= 1;
+    setTimeout(typeLoop, 35);
+    return;
+  }
+
+  if (!isDeleting) {
+    isDeleting = true;
+    setTimeout(typeLoop, 1400);
+    return;
+  }
+
+  isDeleting = false;
+  typingIndex = (typingIndex + 1) % typingPhrases.length;
+  setTimeout(typeLoop, 250);
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("farhan-theme", theme);
+  updateThemeToggle(theme);
+  refreshMapTiles();
+}
+
+function updateThemeToggle(theme) {
+  if (!themeToggle) {
+    return;
+  }
+
+  const icon = themeToggle.querySelector(".theme-toggle__icon");
+  const label = themeToggle.querySelector(".theme-toggle__label");
+  const isDark = theme === "dark";
+
+  icon.textContent = isDark ? "DK" : "LT";
+  label.textContent = isDark ? "Dark" : "Light";
+  themeToggle.setAttribute("aria-pressed", String(!isDark));
+}
+
+function toggleMobileMenu(forceClose = false) {
+  if (!navMenu || !navToggle) {
+    return;
+  }
+
+  const willOpen = forceClose ? false : !navMenu.classList.contains("is-open");
+  navMenu.classList.toggle("is-open", willOpen);
+  navToggle.setAttribute("aria-expanded", String(willOpen));
+}
+
+function handleReveal(entries, observer) {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) {
+      return;
+    }
+
+    entry.target.classList.add("is-visible");
+    observer.unobserve(entry.target);
+  });
+}
+
+function animateSkillBars(entries, observer) {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) {
+      return;
+    }
+
+    const progress = `${entry.target.dataset.progress || 0}%`;
+    const fill = entry.target.querySelector(".skill-fill");
+
+    if (fill) {
+      fill.style.width = progress;
+    }
+
+    observer.unobserve(entry.target);
+  });
+}
+
+function setActiveSection() {
+  const sections = [...document.querySelectorAll("main section[id]")];
+  const scrollPosition = window.scrollY + 140;
+
+  let activeId = sections[0]?.id || "home";
+
+  sections.forEach((section) => {
+    if (scrollPosition >= section.offsetTop) {
+      activeId = section.id;
+    }
+  });
+
+  navLinks.forEach((link) => {
+    const matches = link.getAttribute("href") === `#${activeId}`;
+    link.classList.toggle("active", matches);
+  });
+}
+
+function buildMarker(variant) {
+  return window.L.divIcon({
+    className: "",
+    html: `<span class="map-marker map-marker--${variant}" aria-hidden="true"></span>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+    popupAnchor: [0, -12]
+  });
+}
+
+function getTileConfig() {
+  const theme = document.documentElement.dataset.theme || "dark";
+  const isDark = theme === "dark";
+
+  return {
+    url: isDark
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  };
+}
+
+function refreshMapTiles() {
+  if (!mapState.instance || !window.L) {
+    return;
+  }
+
+  const tileConfig = getTileConfig();
+
+  if (mapState.tileLayer) {
+    mapState.instance.removeLayer(mapState.tileLayer);
+  }
+
+  mapState.tileLayer = window.L.tileLayer(tileConfig.url, {
+    attribution: tileConfig.attribution,
+    maxZoom: 18
+  }).addTo(mapState.instance);
+}
+
+function initMap() {
+  const mapElement = document.getElementById("map");
+
+  if (!mapElement || !window.L) {
+    return;
+  }
+
+  const dhaka = [23.8103, 90.4125];
+  const diuAshulia = [23.8761, 90.3208];
+
+  mapState.instance = window.L.map(mapElement, {
+    zoomControl: false,
+    scrollWheelZoom: false,
+    preferCanvas: true
+  });
+
+  refreshMapTiles();
+
+  const homeMarker = window.L.marker(dhaka, {
+    icon: buildMarker("home")
+  }).addTo(mapState.instance);
+
+  const campusMarker = window.L.marker(diuAshulia, {
+    icon: buildMarker("campus")
+  }).addTo(mapState.instance);
+
+  homeMarker.bindPopup("<strong>Dhaka, Bangladesh</strong><br>Current location");
+  campusMarker.bindPopup(
+    "<strong>Daffodil International University</strong><br>Ashulia study location"
+  );
+
+  window.L.polyline([dhaka, diuAshulia], {
+    color: "#40d3c8",
+    weight: 3,
+    opacity: 0.75,
+    dashArray: "10 10"
+  }).addTo(mapState.instance);
+
+  const bounds = window.L.latLngBounds([dhaka, diuAshulia]);
+  mapState.instance.fitBounds(bounds.pad(0.45));
+  window.L.control.zoom({ position: "bottomright" }).addTo(mapState.instance);
+
+  window.addEventListener("resize", () => {
+    mapState.instance.invalidateSize();
+  });
+}
+
+function initForm() {
+  if (!form || !formStatus) {
+    return;
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const name = new FormData(form).get("name") || "there";
+    formStatus.textContent = `Thanks, ${name}. This demo form is frontend-only, so please use the email links above for a real reply.`;
+    form.reset();
+  });
+}
+
+function trainChatbot(entries) {
+  return entries.map((entry) => {
+    const phrases = uniqueValues([
+      entry.question,
+      ...(entry.aliases || []),
+      ...(entry.keywords || [])
+    ]).map(normalizeText);
+
+    const normalizedQuestion = normalizeText(entry.question);
+    const normalizedAliases = (entry.aliases || []).map(normalizeText);
+    const searchBlob = phrases.join(" ");
+    const tokenWeights = {};
+
+    phrases.forEach((phrase, index) => {
+      tokenizeText(phrase).forEach((token) => {
+        tokenWeights[token] = (tokenWeights[token] || 0) + (index === 0 ? 7 : 4);
+      });
+    });
+
+    (entry.keywords || []).forEach((keyword) => {
+      tokenizeText(keyword).forEach((token) => {
+        tokenWeights[token] = (tokenWeights[token] || 0) + 6;
+      });
+    });
+
+    return {
+      ...entry,
+      normalizedQuestion,
+      normalizedAliases,
+      phrases,
+      searchBlob,
+      tokenWeights
+    };
+  });
+}
+
+function scoreChatbotEntry(queryNormalized, queryTokens, entry) {
+  if (!queryNormalized) {
+    return -1;
+  }
+
+  let score = 0;
+
+  if (queryNormalized === entry.normalizedQuestion) {
+    score += 240;
+  }
+
+  entry.normalizedAliases.forEach((alias) => {
+    if (alias === queryNormalized) {
+      score += 220;
+    } else {
+      if (alias.includes(queryNormalized) && queryNormalized.length > 5) {
+        score += 80;
+      }
+      if (queryNormalized.includes(alias) && alias.length > 5) {
+        score += 60;
+      }
+    }
+  });
+
+  if (entry.normalizedQuestion.includes(queryNormalized) && queryNormalized.length > 5) {
+    score += 75;
+  }
+
+  if (queryNormalized.includes(entry.normalizedQuestion) && entry.normalizedQuestion.length > 7) {
+    score += 75;
+  }
+
+  entry.phrases.forEach((phrase) => {
+    if (phrase.length > 7 && queryNormalized.includes(phrase)) {
+      score += 18;
+    }
+  });
+
+  queryTokens.forEach((token) => {
+    score += entry.tokenWeights[token] || 0;
+
+    if (entry.normalizedQuestion.includes(token)) {
+      score += 4;
+    }
+  });
+
+  for (let index = 0; index < queryTokens.length - 1; index += 1) {
+    const bigram = `${queryTokens[index]} ${queryTokens[index + 1]}`;
+    if (entry.searchBlob.includes(bigram)) {
+      score += 12;
+    }
+  }
+
+  return score;
+}
+
+function getTopChatbotMatches(query) {
+  const queryNormalized = normalizeText(query);
+  const queryTokens = tokenizeText(query);
+
+  return chatbotState.trainedEntries
+    .map((entry) => ({
+      entry,
+      score: scoreChatbotEntry(queryNormalized, queryTokens, entry)
+    }))
+    .sort((left, right) => right.score - left.score);
+}
+
+function getSuggestionPool(excludedQuestion = "") {
+  const starters = window.portfolioChatbotStarters || defaultSuggestionPrompts;
+
+  return uniqueValues(
+    starters
+      .concat(chatbotState.trainedEntries.slice(0, 10).map((entry) => entry.question))
+      .filter((question) => question !== excludedQuestion)
+  ).slice(0, 6);
+}
+
+function resolveChatbotResponse(question) {
+  const results = getTopChatbotMatches(question);
+  const bestMatch = results[0];
+
+  if (!bestMatch || bestMatch.score < 18) {
+    return {
+      answer:
+        "I can answer questions based on this portfolio. Try asking about Farhan's skills, projects, education, career goals, contact details, the map, or how this site was built.",
+      suggestions: getSuggestionPool(),
+      links: ["#about", "#skills", "#projects", "#contact"]
+    };
+  }
+
+  const relatedSuggestions = results
+    .slice(1, 5)
+    .filter((result) => result.score > 10)
+    .map((result) => result.entry.question);
+
+  return {
+    answer: bestMatch.entry.answer,
+    suggestions: uniqueValues(relatedSuggestions.concat(getSuggestionPool(bestMatch.entry.question))).slice(0, 6),
+    links: bestMatch.entry.links || []
+  };
+}
+
+function scrollChatToBottom() {
+  if (!chatbotMessages) {
+    return;
+  }
+
+  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
+
+function createChatMessage(sender, text, links = []) {
+  const article = document.createElement("article");
+  article.className = `chatbot-message chatbot-message--${sender}`;
+
+  const label = document.createElement("span");
+  label.className = "chatbot-message__label";
+  label.textContent = sender === "bot" ? "Site Bot" : "You";
+  article.appendChild(label);
+
+  text
+    .split(/\n+/)
+    .filter(Boolean)
+    .forEach((paragraphText) => {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = paragraphText;
+      article.appendChild(paragraph);
+    });
+
+  if (sender === "bot" && links.length) {
+    const linkRow = document.createElement("div");
+    linkRow.className = "chatbot-message__links";
+
+    uniqueValues(links).forEach((href) => {
+      const anchor = document.createElement("a");
+      anchor.className = "chatbot-link";
+      anchor.href = href;
+      anchor.textContent = sectionLabels[href] || "Open Section";
+      anchor.addEventListener("click", () => {
+        setChatbotOpen(false);
+      });
+      linkRow.appendChild(anchor);
+    });
+
+    article.appendChild(linkRow);
+  }
+
+  chatbotMessages.appendChild(article);
+  scrollChatToBottom();
+}
+
+function renderChatSuggestions(prompts) {
+  if (!chatbotSuggestions) {
+    return;
+  }
+
+  chatbotSuggestions.innerHTML = "";
+
+  prompts.slice(0, 6).forEach((prompt) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "chatbot-suggestion";
+    button.textContent = prompt;
+    button.addEventListener("click", () => {
+      if (chatbotInput) {
+        chatbotInput.value = prompt;
+      }
+      handleChatbotQuestion(prompt);
+    });
+    chatbotSuggestions.appendChild(button);
+  });
+}
+
+function seedChatbotConversation() {
+  if (chatbotState.greeted || !chatbotMessages) {
+    return;
+  }
+
+  chatbotMessages.innerHTML = "";
+  createChatMessage(
+    "bot",
+    `Hi, I am Farhan's portfolio assistant. I was prepared with ${chatbotState.trainedEntries.length} portfolio questions and related prompts so I can answer common recruiter, visitor, beginner, and professor-style questions about this site.`,
+    ["#about", "#projects", "#contact"]
+  );
+  renderChatSuggestions(getSuggestionPool());
+  chatbotState.greeted = true;
+}
+
+function setChatbotOpen(isOpen) {
+  if (!chatbotPanel || !chatbotLauncher) {
+    return;
+  }
+
+  chatbotPanel.classList.toggle("is-open", isOpen);
+  chatbotLauncher.setAttribute("aria-expanded", String(isOpen));
+
+  if (isOpen) {
+    seedChatbotConversation();
+    window.setTimeout(() => {
+      chatbotInput?.focus();
+      scrollChatToBottom();
+    }, 120);
+  }
+}
+
+function handleChatbotQuestion(rawQuestion) {
+  const question = String(rawQuestion || "").trim();
+
+  if (!question || !chatbotMessages) {
+    return;
+  }
+
+  createChatMessage("user", question);
+
+  const response = resolveChatbotResponse(question);
+  createChatMessage("bot", response.answer, response.links);
+  renderChatSuggestions(response.suggestions);
+
+  if (chatbotInput) {
+    chatbotInput.value = "";
+  }
+}
+
+function initChatbot() {
+  const knowledgeBase = Array.isArray(window.portfolioKnowledgeBase)
+    ? window.portfolioKnowledgeBase
+    : [];
+
+  chatbotState.trainedEntries = trainChatbot(knowledgeBase);
+
+  if (chatbotMeta) {
+    if (chatbotState.trainedEntries.length > 0) {
+      chatbotMeta.textContent = `Indexed ${chatbotState.trainedEntries.length} portfolio questions for visitors, recruiters, students, and professors.`;
+    } else {
+      chatbotMeta.textContent = "Portfolio knowledge is unavailable right now.";
+    }
+  }
+
+  renderChatSuggestions(getSuggestionPool());
+
+  if (chatbotLauncher) {
+    chatbotLauncher.addEventListener("click", () => {
+      const nextState = !chatbotPanel.classList.contains("is-open");
+      setChatbotOpen(nextState);
+    });
+  }
+
+  if (chatbotClose) {
+    chatbotClose.addEventListener("click", () => setChatbotOpen(false));
+  }
+
+  if (chatbotForm) {
+    chatbotForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      handleChatbotQuestion(chatbotInput?.value || "");
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && chatbotPanel?.classList.contains("is-open")) {
+      setChatbotOpen(false);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const initialTheme =
+    document.documentElement.dataset.theme ||
+    (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+  setTheme(initialTheme);
+  updateThemeToggle(initialTheme);
+  typeLoop();
+  initForm();
+  initMap();
+  initChatbot();
+
+  if (yearTarget) {
+    yearTarget.textContent = String(new Date().getFullYear());
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const nextTheme =
+        document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      setTheme(nextTheme);
+    });
+  }
+
+  if (navToggle) {
+    navToggle.addEventListener("click", () => toggleMobileMenu());
+  }
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => toggleMobileMenu(true));
+  });
+
+  const revealObserver = new IntersectionObserver(handleReveal, {
+    threshold: 0.15,
+    rootMargin: "0px 0px -8% 0px"
+  });
+
+  revealItems.forEach((item) => revealObserver.observe(item));
+
+  const skillObserver = new IntersectionObserver(animateSkillBars, {
+    threshold: 0.35
+  });
+
+  skillItems.forEach((item) => skillObserver.observe(item));
+
+  setActiveSection();
+
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (ticking) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      setActiveSection();
+      ticking = false;
+    });
+
+    ticking = true;
+  });
+});

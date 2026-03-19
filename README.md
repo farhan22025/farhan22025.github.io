@@ -1,65 +1,78 @@
-Hi, I'm Farhan Alam 👋
-Entry-Level Data Engineer | Software Engineering Student @ DIU
+# Farhan Alam Portfolio
 
-I am a final-year Software Engineering student at Daffodil International University with a strong interest in Data Engineering and Backend Development. I am building a solid foundation in data handling, database systems, and scalable application design.
+A modern, minimal, and fully responsive personal portfolio website built with plain HTML, CSS, and JavaScript for easy GitHub Pages deployment.
 
-I am actively preparing to begin my professional journey in the tech industry, where I can contribute to real-world data-driven solutions while continuously learning and growing.
+## Folder Structure
 
-🚀 Core Skills
+```text
+E:\Project_portfolio11
+|-- assets
+|   `-- favicon.svg
+|-- chatbot-data.js
+|-- index.html
+|-- Portfolio-Projects
+|   `-- README.md
+|-- Prompt to Codex.txt
+|-- styles.css
+|-- script.js
+`-- README.md
+```
 
-Programming: PHP, Java, C, Python (currently developing proficiency)
+## Features
 
-Database & Data: MySQL, SQL, Excel/Google Sheets, Data Fundamentals
+- Responsive single-page layout
+- Modern teal/cyan data-dashboard inspired design
+- Sticky navigation with active section tracking
+- Typing animation in the hero section
+- Scroll reveal animations
+- Animated skill bars
+- Dark/light mode toggle with saved preference
+- Interactive Leaflet map with Dhaka and DIU Ashulia markers
+- In-site chatbot with a curated portfolio question bank
+- Frontend-only contact form
 
-Concepts: Object-Oriented Programming (OOP), Basic Data Structures, System Design
+## Run Locally
 
-Tools: Git (basic), Canva, Adobe Photoshop, Illustrator, SQA Testing
+1. Open the project folder.
+2. Double-click `index.html` or serve the folder with a simple local server.
+3. Make sure you have an internet connection so the Google Fonts and Leaflet CDN assets can load.
 
-Soft Skills: Problem-solving, teamwork, time management, communication
+If you want to run it with a local server using Python:
 
-📂 Academic Projects
+```bash
+python -m http.server 5500
+```
 
-Smart Waste Management System
-Designed system architecture including SRS, UML diagrams, ERD, and data flow models, focusing on structured data design and system efficiency.
+Then visit `http://localhost:5500`.
 
-Coffee Shop Management System (Java)
-Developed a POS system using OOP principles to manage transactions and improve data organization.
+## Deploy To GitHub Pages
 
-Banking Management System (C)
-Implemented a file-based system to handle financial transactions with data persistence.
+1. Create a new GitHub repository.
+2. Upload the files from this project folder.
+3. Commit and push to the repository's default branch.
+4. In GitHub, open `Settings` > `Pages`.
+5. Under `Build and deployment`, choose `Deploy from a branch`.
+6. Select your default branch and the `/ (root)` folder.
+7. Save the settings and wait for GitHub Pages to publish the site.
 
-Thesis (Ongoing): Deepfake Detection
-Working on detecting manipulated media using machine learning concepts and GPU-based processing (Ryzen 9, RTX 2060).
+## Customize Before Publishing
 
-🏫 Education
+- Replace the placeholder GitHub link in `index.html`.
+- Replace the placeholder LinkedIn link in `index.html`.
+- Update any wording, skill percentages, or project details as needed.
+- If you want different map markers, edit the coordinates in `script.js`.
+- To expand the chatbot's answers, add or edit entries in `chatbot-data.js`.
+- The real learning workspace now lives under `Portfolio-Projects/`; add files there as you build out each track.
 
-B.Sc. in Software Engineering
-Daffodil International University (2022–2026)
-CGPA: 3.06 / 4.00
+## Tech Stack
 
-Cambridge A Levels
-St. Loretto School & College (2021)
-GPA: 4.00 / 5.00
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Leaflet.js
 
-🤝 Leadership & Activities
+## Chatbot Notes
 
-Member, DIU Data Science Club
-Gaining hands-on exposure to SQL, Python, and data analysis concepts
-
-Member, DIU Robotics Club
-Contributing to IoT and automation-based initiatives
-
-Volunteer – Tech Events & Hackathons
-Supported organization and coordination of multiple university tech events
-
-📬 Contact
-
-📍 Dhaka, Bangladesh
-📧 alam22205341122@diu.edu.bd
-
-📞 +880 1610-772313
-🌐 Portfolio: http://www.reallygreatsite.com
-
-🎯 Career Objective
-
-To start my career as a Data Engineer or Software Engineer where I can apply my academic knowledge, develop practical skills, and contribute to building efficient, data-driven systems.
+- The chatbot is fully client-side and does not use a backend or external AI API.
+- It works by preprocessing the seeded question bank in `chatbot-data.js` and matching visitor questions to the closest portfolio topic.
+- It is fast and private, but limited to the information currently included in the site data.

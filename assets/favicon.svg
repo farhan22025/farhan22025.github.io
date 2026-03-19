@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Farhan Alam Portfolio Icon</title>
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#40d3c8" />
+      <stop offset="52%" stop-color="#2ec5ff" />
+      <stop offset="100%" stop-color="#114d92" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="#071520" />
+  <rect x="7" y="7" width="50" height="50" rx="14" fill="url(#g)" />
+  <path
+    d="M21 43V21h17v5H27v4h10v5H27v8Zm18 0V21h6v22Z"
+    fill="#f5fcff"
+  />
+</svg>
