@@ -4,9 +4,9 @@ window.portfolioKnowledgeBase = [
     category: "general",
     question: "Who is Farhan Alam?",
     aliases: ["tell me about Farhan", "introduce Farhan Alam", "who made this portfolio"],
-    keywords: ["farhan", "about", "introduce", "profile", "student", "engineer"],
+    keywords: ["farhan", "about", "introduce", "profile", "software engineer", "engineer"],
     answer:
-      "Farhan Alam is a Software Engineering student at Daffodil International University who is preparing for entry-level work in data engineering and backend development.",
+      "Farhan Alam is a Software Engineer focused on backend and data-oriented systems, with his B.Sc. in Software Engineering at DIU reaching final completion around April or May 2026.",
     links: ["#about", "#education"]
   },
   {
@@ -16,7 +16,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["what does he call himself", "what role is he targeting", "what is his headline"],
     keywords: ["title", "headline", "role", "entry level", "data engineer"],
     answer:
-      "His current headline is Entry-Level Data Engineer and Software Engineering Student at DIU. The portfolio positions him toward data engineering and backend-focused early-career roles.",
+      "His current headline is Software Engineer with a backend and data engineering focus. The portfolio positions him for software engineering, backend, and data-oriented roles.",
     links: ["#home", "#about"]
   },
   {
@@ -36,7 +36,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["what degree is he doing", "what does he study", "current education"],
     keywords: ["study", "degree", "software engineering", "bsc", "university"],
     answer:
-      "He is studying B.Sc. in Software Engineering at Daffodil International University, with graduation expected in 2026.",
+      "He is completing a B.Sc. in Software Engineering at Daffodil International University, with completion targeted around April or May 2026.",
     links: ["#education"]
   },
   {
@@ -44,9 +44,9 @@ window.portfolioKnowledgeBase = [
     category: "education",
     question: "When will Farhan graduate?",
     aliases: ["expected graduation", "graduation year", "when does he finish university"],
-    keywords: ["graduate", "graduation", "2026", "finish"],
+    keywords: ["graduate", "graduation", "2026", "finish", "april", "may"],
     answer:
-      "His expected graduation year is 2026, based on the B.Sc. Software Engineering timeline shown on the site.",
+      "His completion window is around April or May 2026, based on the education timeline shown on the site.",
     links: ["#education", "#home"]
   },
   {
@@ -76,7 +76,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["career objective", "future goal", "what does he want to become"],
     keywords: ["career", "goal", "objective", "future", "aim"],
     answer:
-      "He wants to start his career as a Data Engineer or Backend Software Engineer and grow by building efficient, data-driven systems.",
+      "He is positioning himself to grow as a Software Engineer while moving deeper into backend and data engineering work built around efficient, data-driven systems.",
     links: ["#about", "#home"]
   },
   {
@@ -116,7 +116,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["availability for jobs", "is he hiring ready", "open to work"],
     keywords: ["internship", "entry level", "open", "opportunity", "available"],
     answer:
-      "Yes. The portfolio explicitly says he is open to internships and entry-level opportunities related to software engineering, backend development, and data work.",
+      "Yes. The portfolio says he is available for software engineering, backend, and data-oriented roles, aligned with an April-May 2026 completion window.",
     links: ["#home", "#contact"]
   },
   {
@@ -126,7 +126,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["best job fit", "which positions suit him", "what should recruiters consider him for"],
     keywords: ["role", "fit", "data engineer", "backend", "internship", "junior"],
     answer:
-      "The best fit today would be entry-level Data Engineer, Backend Software Engineer, or technically strong internship roles that involve databases, structured logic, or system-oriented problem solving.",
+      "The best fit today would be Software Engineer, Backend Engineer, or Data Engineer track roles that involve databases, structured logic, and system-oriented problem solving.",
     links: ["#about", "#skills", "#contact"]
   },
   {
@@ -456,7 +456,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["work experience", "industry background", "professional experience"],
     keywords: ["experience", "industry", "job", "professional", "internship"],
     answer:
-      "The portfolio presents him as an aspiring entry-level candidate, so the focus is on academic projects, learning progress, and student activities rather than professional industry experience.",
+      "The portfolio presents him as an early-career Software Engineer, so the focus is on project work, engineering growth, and technical communities rather than long professional industry history.",
     links: ["#about", "#projects"]
   },
   {
@@ -686,7 +686,7 @@ window.portfolioKnowledgeBase = [
     aliases: ["collaboration value", "team member style", "how would he contribute to a team"],
     keywords: ["teammate", "collaboration", "support", "student clubs", "volunteer"],
     answer:
-      "Based on the portfolio, he would likely be a thoughtful early-career teammate who contributes with structure, willingness to learn, steady technical effort, and collaborative student-community experience.",
+      "Based on the portfolio, he would likely be a thoughtful early-career teammate who contributes with structure, willingness to learn, steady technical effort, and collaborative community experience.",
     links: ["#activities", "#about"]
   },
   {
