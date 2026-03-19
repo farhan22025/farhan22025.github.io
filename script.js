@@ -1,18 +1,21 @@
 const typingTarget = document.getElementById("typing-text");
 const themeToggle = document.querySelector(".theme-toggle");
 const navToggle = document.querySelector(".nav-toggle");
-const navMenu = document.querySelector(".nav-menu");
-const navLinks = document.querySelectorAll(".nav-link");
-const revealItems = document.querySelectorAll(".reveal");
-const skillItems = document.querySelectorAll(".skill-item");
+const navMenu = document.getElementById("nav-menu");
+const navLinks = [...document.querySelectorAll('.nav-link[href^="#"]')];
+const revealItems = [...document.querySelectorAll(".reveal")];
+const skillItems = [...document.querySelectorAll(".skill-item")];
 const form = document.getElementById("contact-form");
 const formStatus = document.getElementById("form-status");
 const yearTarget = document.getElementById("current-year");
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
 const time24Target = document.getElementById("time-24");
 const time12Target = document.getElementById("time-12");
 const footerTimeTarget = document.getElementById("footer-time");
 const mapFallbackNote = document.getElementById("map-fallback-note");
 
+const chatbotTeaser = document.getElementById("chatbot-teaser");
 const chatbotLauncher = document.getElementById("chatbot-launcher");
 const chatbotPanel = document.getElementById("chatbot-panel");
 const chatbotClose = document.getElementById("chatbot-close");
@@ -21,6 +24,7 @@ const chatbotSuggestions = document.getElementById("chatbot-suggestions");
 const chatbotForm = document.getElementById("chatbot-form");
 const chatbotInput = document.getElementById("chatbot-input");
 const chatbotMeta = document.getElementById("chatbot-meta");
+const chatbotStatusTarget = document.getElementById("chatbot-status");
 
 const typingPhrases = [
   "scalable data-ready systems.",
@@ -29,13 +33,10 @@ const typingPhrases = [
   "data-driven backend products."
 ];
 
-const defaultSuggestionPrompts = [
-  "Who is Farhan Alam?",
-  "What projects has he built?",
-  "What are his strongest skills?",
-  "Where can I read his writings?",
-  "How can I hire Farhan?"
-];
+const themeMetaColors = {
+  dark: "#071520",
+  light: "#edf8fb"
+};
 
 const sectionLabels = {
   "#home": "Open Home",
@@ -90,9 +91,9 @@ const stopWords = new Set([
   "your"
 ]);
 
-let typingIndex = 0;
-let characterIndex = 0;
-let isDeleting = false;
+let typingPhraseIndex = 0;
+let typingCharacterIndex = 0;
+let typingDeleting = false;
 
 const mapState = {
   instance: null,
@@ -104,10 +105,12 @@ const mapState = {
 };
 
 const chatbotState = {
-  trainedEntries: [],
-  greeted: false,
+  config: null,
   initialized: false,
-  pendingResponseTimer: null
+  greeted: false,
+  open: false,
+  typingTimer: null,
+  teaserTimer: null
 };
 
 const dhakaTime24Formatter = new Intl.DateTimeFormat("en-GB", {
@@ -129,7 +132,7 @@ const dhakaTime12Formatter = new Intl.DateTimeFormat("en-US", {
 function normalizeText(text) {
   return String(text || "")
     .toLowerCase()
-    .replace(/[^a-z0-9\s#]/g, " ")
+    .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -150,39 +153,37 @@ function typeLoop() {
     return;
   }
 
-  const currentPhrase = typingPhrases[typingIndex];
-  const speed = isDeleting ? 45 : 90;
+  const currentPhrase = typingPhrases[typingPhraseIndex];
+  const speed = typingDeleting ? 45 : 90;
+  typingTarget.textContent = currentPhrase.slice(0, typingCharacterIndex);
 
-  typingTarget.textContent = currentPhrase.slice(0, characterIndex);
-
-  if (!isDeleting && characterIndex < currentPhrase.length) {
-    characterIndex += 1;
+  if (!typingDeleting && typingCharacterIndex < currentPhrase.length) {
+    typingCharacterIndex += 1;
     window.setTimeout(typeLoop, speed);
     return;
   }
 
-  if (isDeleting && characterIndex > 0) {
-    characterIndex -= 1;
+  if (typingDeleting && typingCharacterIndex > 0) {
+    typingCharacterIndex -= 1;
     window.setTimeout(typeLoop, 35);
     return;
   }
 
-  if (!isDeleting) {
-    isDeleting = true;
-    window.setTimeout(typeLoop, 1400);
+  if (!typingDeleting) {
+    typingDeleting = true;
+    window.setTimeout(typeLoop, 1350);
     return;
   }
 
-  isDeleting = false;
-  typingIndex = (typingIndex + 1) % typingPhrases.length;
-  window.setTimeout(typeLoop, 250);
+  typingDeleting = false;
+  typingPhraseIndex = (typingPhraseIndex + 1) % typingPhrases.length;
+  window.setTimeout(typeLoop, 240);
 }
 
-function setTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem("farhan-theme", theme);
-  updateThemeToggle(theme);
-  refreshMapTiles();
+function updateThemeMeta(theme) {
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute("content", themeMetaColors[theme] || themeMetaColors.dark);
+  }
 }
 
 function updateThemeToggle(theme) {
@@ -195,18 +196,26 @@ function updateThemeToggle(theme) {
   const isDark = theme === "dark";
 
   if (icon) {
-    icon.textContent = isDark ? "\u263E" : "\u2600";
+    icon.textContent = isDark ? "\u263e" : "\u2600";
   }
 
   if (label) {
     label.textContent = isDark ? "Dark" : "Light";
   }
 
-  themeToggle.setAttribute("aria-pressed", String(!isDark));
   themeToggle.setAttribute(
     "aria-label",
     isDark ? "Switch to light theme" : "Switch to dark theme"
   );
+  themeToggle.setAttribute("aria-pressed", String(!isDark));
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("farhan-theme", theme);
+  updateThemeToggle(theme);
+  updateThemeMeta(theme);
+  refreshMapTiles();
 }
 
 function toggleMobileMenu(forceClose = false) {
@@ -214,43 +223,43 @@ function toggleMobileMenu(forceClose = false) {
     return;
   }
 
-  const willOpen = forceClose ? false : !navMenu.classList.contains("is-open");
-  navMenu.classList.toggle("is-open", willOpen);
-  navToggle.setAttribute("aria-expanded", String(willOpen));
+  const shouldOpen = forceClose ? false : !navMenu.classList.contains("is-open");
+  navMenu.classList.toggle("is-open", shouldOpen);
+  navToggle.setAttribute("aria-expanded", String(shouldOpen));
 }
 
-function handleReveal(entries, observer) {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) {
-      return;
-    }
+function navigateToHash(hash) {
+  const target = document.querySelector(hash);
 
-    entry.target.classList.add("is-visible");
-    observer.unobserve(entry.target);
+  if (!target) {
+    return;
+  }
+
+  target.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start"
   });
 }
 
-function animateSkillBars(entries, observer) {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) {
-      return;
-    }
+function bindInPageLinks() {
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const href = link.getAttribute("href");
 
-    const progress = `${entry.target.dataset.progress || 0}%`;
-    const fill = entry.target.querySelector(".skill-fill");
+      if (!href || !href.startsWith("#")) {
+        return;
+      }
 
-    if (fill) {
-      fill.style.width = progress;
-    }
-
-    observer.unobserve(entry.target);
+      event.preventDefault();
+      toggleMobileMenu(true);
+      navigateToHash(href);
+    });
   });
 }
 
 function setActiveSection() {
   const sections = [...document.querySelectorAll("main section[id]")];
-  const scrollPosition = window.scrollY + 140;
-
+  const scrollPosition = window.scrollY + 160;
   let activeId = sections[0]?.id || "home";
 
   sections.forEach((section) => {
@@ -260,9 +269,62 @@ function setActiveSection() {
   });
 
   navLinks.forEach((link) => {
-    const matches = link.getAttribute("href") === `#${activeId}`;
-    link.classList.toggle("active", matches);
+    link.classList.toggle("active", link.getAttribute("href") === `#${activeId}`);
   });
+}
+
+function revealEntry(entry, observer) {
+  if (!entry.isIntersecting) {
+    return;
+  }
+
+  entry.target.classList.add("is-visible");
+  observer.unobserve(entry.target);
+}
+
+function animateSkillBar(entry, observer) {
+  if (!entry.isIntersecting) {
+    return;
+  }
+
+  const fill = entry.target.querySelector(".skill-fill");
+  const progress = `${entry.target.dataset.progress || 0}%`;
+
+  if (fill) {
+    fill.style.width = progress;
+  }
+
+  observer.unobserve(entry.target);
+}
+
+function initRevealAnimations() {
+  if (!("IntersectionObserver" in window)) {
+    revealItems.forEach((item) => item.classList.add("is-visible"));
+    skillItems.forEach((item) => {
+      const fill = item.querySelector(".skill-fill");
+      if (fill) {
+        fill.style.width = `${item.dataset.progress || 0}%`;
+      }
+    });
+    return;
+  }
+
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => revealEntry(entry, observer));
+  }, {
+    threshold: 0.15,
+    rootMargin: "0px 0px -8% 0px"
+  });
+
+  revealItems.forEach((item) => revealObserver.observe(item));
+
+  const skillObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => animateSkillBar(entry, observer));
+  }, {
+    threshold: 0.35
+  });
+
+  skillItems.forEach((item) => skillObserver.observe(item));
 }
 
 function updateDhakaClock() {
@@ -309,12 +371,12 @@ function buildMarker(variant) {
 
 function getTileConfig() {
   const theme = document.documentElement.dataset.theme || "dark";
-  const isDark = theme === "dark";
 
   return {
-    url: isDark
-      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    url:
+      theme === "dark"
+        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
   };
@@ -325,12 +387,11 @@ function refreshMapTiles() {
     return;
   }
 
-  const tileConfig = getTileConfig();
-
   if (mapState.tileLayer) {
     mapState.instance.removeLayer(mapState.tileLayer);
   }
 
+  const tileConfig = getTileConfig();
   mapState.tileLayer = window.L.tileLayer(tileConfig.url, {
     attribution: tileConfig.attribution,
     maxZoom: 18
@@ -340,11 +401,7 @@ function refreshMapTiles() {
 function initMap() {
   const mapElement = document.getElementById("map");
 
-  if (!mapElement) {
-    return false;
-  }
-
-  if (!window.L) {
+  if (!mapElement || !window.L) {
     return false;
   }
 
@@ -366,18 +423,13 @@ function initMap() {
 
     refreshMapTiles();
 
-    const homeMarker = window.L.marker(dhaka, {
-      icon: buildMarker("home")
-    }).addTo(mapState.instance);
+    window.L.marker(dhaka, { icon: buildMarker("home") })
+      .addTo(mapState.instance)
+      .bindPopup("<strong>Dhaka, Bangladesh</strong><br>Current location");
 
-    const campusMarker = window.L.marker(diuAshulia, {
-      icon: buildMarker("campus")
-    }).addTo(mapState.instance);
-
-    homeMarker.bindPopup("<strong>Dhaka, Bangladesh</strong><br>Current location");
-    campusMarker.bindPopup(
-      "<strong>Daffodil International University</strong><br>Ashulia study location"
-    );
+    window.L.marker(diuAshulia, { icon: buildMarker("campus") })
+      .addTo(mapState.instance)
+      .bindPopup("<strong>Daffodil International University</strong><br>Ashulia study location");
 
     window.L.polyline([dhaka, diuAshulia], {
       color: "#40d3c8",
@@ -386,13 +438,14 @@ function initMap() {
       dashArray: "10 10"
     }).addTo(mapState.instance);
 
-    const bounds = window.L.latLngBounds([dhaka, diuAshulia]);
-    mapState.instance.fitBounds(bounds.pad(0.45));
+    mapState.instance.fitBounds(window.L.latLngBounds([dhaka, diuAshulia]).pad(0.45));
     window.L.control.zoom({ position: "bottomright" }).addTo(mapState.instance);
 
     if (!mapState.resizeBound) {
       window.addEventListener("resize", () => {
-        mapState.instance?.invalidateSize();
+        if (mapState.instance) {
+          mapState.instance.invalidateSize();
+        }
       });
       mapState.resizeBound = true;
     }
@@ -419,14 +472,7 @@ function ensureMap() {
     return;
   }
 
-  const initialized = initMap();
-
-  if (initialized) {
-    if (mapState.retryTimer) {
-      window.clearTimeout(mapState.retryTimer);
-      mapState.retryTimer = null;
-    }
-
+  if (initMap()) {
     mapState.attempts = 0;
     return;
   }
@@ -441,12 +487,11 @@ function ensureMap() {
     return;
   }
 
-  updateMapFallback("Loading interactive map. If it delays, the Dhaka and DIU quick links still work.");
-
   if (mapState.retryTimer) {
     window.clearTimeout(mapState.retryTimer);
   }
 
+  updateMapFallback("Loading interactive map. If it delays, the Dhaka and DIU quick links still work.");
   mapState.retryTimer = window.setTimeout(ensureMap, 800);
 }
 
@@ -458,344 +503,151 @@ function initForm() {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const name = new FormData(form).get("name") || "there";
-    formStatus.textContent = `Thanks, ${name}. This demo form is frontend-only, so please use the direct email, phone, or WhatsApp options for a real reply.`;
+    formStatus.textContent = `Thanks, ${name}. This form is a frontend demo, so the fastest real contact route is email or WhatsApp from the Hire Me section.`;
     form.reset();
   });
 }
 
-function getFallbackKnowledgeBase() {
-  return [
-    {
-      question: "Who is Farhan Alam?",
-      aliases: ["tell me about Farhan", "introduce Farhan"],
-      keywords: ["farhan", "software engineer", "backend"],
-      answer:
-        "Farhan Alam is a Software Engineer based in Dhaka, Bangladesh, focused on backend systems, databases, and data-ready engineering work.",
-      links: ["#about", "#contact"]
-    },
-    {
-      question: "What projects has he built?",
-      aliases: ["project list", "portfolio projects"],
-      keywords: ["projects", "smart waste", "coffee shop", "banking", "deepfake"],
-      answer:
-        "The site highlights Smart Waste Management System, Coffee Shop Management System, Banking Management System, and Deepfake Detection, each with a GitHub destination.",
-      links: ["#projects"]
-    },
-    {
-      question: "What are his strongest skills?",
-      aliases: ["top skills", "best technical areas"],
-      keywords: ["skills", "sql", "backend", "system design", "database"],
-      answer:
-        "His strongest visible areas are SQL, database thinking, backend-oriented logic, system design, and structured software engineering work.",
-      links: ["#skills", "#about"]
-    },
-    {
-      question: "How can I hire Farhan?",
-      aliases: ["contact Farhan", "reach Farhan", "hire me section"],
-      keywords: ["hire", "contact", "email", "phone", "whatsapp"],
-      answer:
-        "Use the Hire Me section for direct contact. It includes two email addresses, a phone number, WhatsApp, Facebook, the resume, and GitHub links.",
-      links: ["#contact"]
-    },
-    {
-      question: "Where can I read his writings?",
-      aliases: ["research notes", "writings section", "papers"],
-      keywords: ["writings", "research", "notes", "papers"],
-      answer:
-        "Open the Writings and Research section to view thesis notes, backend and data engineering notes, and software engineering writeups linked to GitHub.",
-      links: ["#writings"]
-    },
-    {
-      question: "Where is Farhan based?",
-      aliases: ["location", "where does he live"],
-      keywords: ["dhaka", "bangladesh", "location"],
-      answer:
-        "Farhan is based in Dhaka, Bangladesh, and the map section also shows Daffodil International University in Ashulia.",
-      links: ["#map-section", "#contact"]
-    },
-    {
-      question: "What is this site built with?",
-      aliases: ["site stack", "portfolio technology"],
-      keywords: ["html", "css", "javascript", "leaflet", "chatbot"],
-      answer:
-        "This portfolio is built with HTML, CSS, and JavaScript, with Leaflet for the map and a client-side chatbot trained on portfolio questions.",
-      links: ["#home", "#map-section"]
-    }
-  ];
-}
-
-function getStaticChatbotResponse(question) {
-  const query = normalizeText(question);
-
-  if (!query) {
-    return null;
-  }
-
-  if (
-    query.includes("hello") ||
-    query.includes("hi ") ||
-    query === "hi" ||
-    query.includes("hey")
-  ) {
-    return {
-      answer:
-        "Hello. I can help with Farhan's skills, projects, writings, contact details, education, and site features.",
-      suggestions: getSuggestionPool(),
-      links: ["#about", "#projects", "#writings", "#contact"]
-    };
-  }
-
-  if (query.includes("email") || query.includes("mail")) {
-    return {
-      answer:
-        "Farhan's primary email is alam22205341122@diu.edu.bd and his secondary email is f05076963@gmail.com.",
-      suggestions: [
-        "What is Farhan's phone number?",
-        "Can I message Farhan on WhatsApp?",
-        "Can I view Farhan's resume?"
-      ],
-      links: ["#contact"]
-    };
-  }
-
-  if (query.includes("phone") || query.includes("number") || query.includes("whatsapp")) {
-    return {
-      answer:
-        "You can reach Farhan at +8801610772313, and the Hire Me section also includes a WhatsApp Business button for direct contact.",
-      suggestions: [
-        "What are Farhan's email addresses?",
-        "Can I view Farhan's resume?",
-        "How can I hire or contact Farhan?"
-      ],
-      links: ["#contact"]
-    };
-  }
-
-  if (query.includes("resume") || query.includes("cv")) {
-    return {
-      answer:
-        "Yes. The site includes a direct resume PDF link in both the hero section and the Hire Me section.",
-      suggestions: [
-        "How can I hire or contact Farhan?",
-        "Where is Farhan's GitHub?",
-        "What projects has Farhan built?"
-      ],
-      links: ["#home", "#contact"]
-    };
-  }
-
-  if (query.includes("project") || query.includes("github")) {
-    return {
-      answer:
-        "The Projects and Writings sections both include GitHub links so visitors can open project folders and notes directly inside the live repository.",
-      suggestions: [
-        "What projects has Farhan built?",
-        "What is in the Writings and Research section?",
-        "Can I view the source of this portfolio?"
-      ],
-      links: ["#projects", "#writings", "#contact"]
-    };
-  }
-
-  if (query.includes("write") || query.includes("research") || query.includes("paper")) {
-    return {
-      answer:
-        "The Writings and Research section contains thesis notes, backend and data engineering notes, and software engineering writeups linked to GitHub.",
-      suggestions: [
-        "What are the Deepfake Detection Thesis Notes?",
-        "What are the Backend and Data Engineering Notes?",
-        "Can I view the source of this portfolio?"
-      ],
-      links: ["#writings"]
-    };
-  }
-
-  if (query.includes("map") || query.includes("location") || query.includes("dhaka")) {
-    return {
-      answer:
-        "The map section shows Farhan's location in Dhaka and Daffodil International University in Ashulia, with direct Google Maps links as backup.",
-      suggestions: [
-        "Where is Farhan based?",
-        "What does the map show?",
-        "How can I hire or contact Farhan?"
-      ],
-      links: ["#map-section", "#contact"]
-    };
-  }
-
-  return null;
-}
-
-function trainChatbot(entries) {
-  return entries.map((entry) => {
-    const phrases = uniqueValues([
-      entry.question,
-      ...(entry.aliases || []),
-      ...(entry.keywords || [])
-    ]).map(normalizeText);
-
-    const normalizedQuestion = normalizeText(entry.question);
-    const normalizedAliases = (entry.aliases || []).map(normalizeText);
-    const searchBlob = phrases.join(" ");
-    const tokenWeights = {};
-
-    phrases.forEach((phrase, index) => {
-      tokenizeText(phrase).forEach((token) => {
-        tokenWeights[token] = (tokenWeights[token] || 0) + (index === 0 ? 7 : 4);
-      });
-    });
-
-    (entry.keywords || []).forEach((keyword) => {
-      tokenizeText(keyword).forEach((token) => {
-        tokenWeights[token] = (tokenWeights[token] || 0) + 6;
-      });
-    });
-
-    return {
-      ...entry,
-      normalizedQuestion,
-      normalizedAliases,
-      phrases,
-      searchBlob,
-      tokenWeights
-    };
-  });
-}
-
-function scoreChatbotEntry(queryNormalized, queryTokens, entry) {
-  if (!queryNormalized) {
-    return -1;
-  }
-
-  let score = 0;
-
-  if (queryNormalized === entry.normalizedQuestion) {
-    score += 240;
-  }
-
-  entry.normalizedAliases.forEach((alias) => {
-    if (alias === queryNormalized) {
-      score += 220;
-    } else {
-      if (alias.includes(queryNormalized) && queryNormalized.length > 4) {
-        score += 80;
-      }
-
-      if (queryNormalized.includes(alias) && alias.length > 4) {
-        score += 60;
-      }
-    }
-  });
-
-  if (entry.normalizedQuestion.includes(queryNormalized) && queryNormalized.length > 4) {
-    score += 75;
-  }
-
-  if (queryNormalized.includes(entry.normalizedQuestion) && entry.normalizedQuestion.length > 6) {
-    score += 75;
-  }
-
-  entry.phrases.forEach((phrase) => {
-    if (phrase.length > 6 && queryNormalized.includes(phrase)) {
-      score += 18;
-    }
-  });
-
-  queryTokens.forEach((token) => {
-    score += entry.tokenWeights[token] || 0;
-
-    if (entry.normalizedQuestion.includes(token)) {
-      score += 4;
-    }
-  });
-
-  for (let index = 0; index < queryTokens.length - 1; index += 1) {
-    const bigram = `${queryTokens[index]} ${queryTokens[index + 1]}`;
-    if (entry.searchBlob.includes(bigram)) {
-      score += 12;
-    }
-  }
-
-  return score;
-}
-
-function getTopChatbotMatches(query) {
-  const queryNormalized = normalizeText(query);
-  const queryTokens = tokenizeText(query);
-
-  return chatbotState.trainedEntries
-    .map((entry) => ({
-      entry,
-      score: scoreChatbotEntry(queryNormalized, queryTokens, entry)
-    }))
-    .sort((left, right) => right.score - left.score);
-}
-
-function getSuggestionPool(excludedQuestion = "") {
-  const starters = window.portfolioChatbotStarters || defaultSuggestionPrompts;
-
-  return uniqueValues(
-    starters
-      .concat(chatbotState.trainedEntries.slice(0, 12).map((entry) => entry.question))
-      .filter((question) => question !== excludedQuestion)
-  ).slice(0, 6);
-}
-
-function resolveChatbotResponse(question) {
-  const staticResponse = getStaticChatbotResponse(question);
-
-  if (staticResponse) {
-    return staticResponse;
-  }
-
-  const results = getTopChatbotMatches(question);
-  const bestMatch = results[0];
-
-  if (!bestMatch || bestMatch.score < 7) {
-    return {
-      answer:
-        "I can answer questions based on this portfolio. Try asking about Farhan's skills, projects, writings, education, contact details, the map, or how this site was built.",
-      suggestions: getSuggestionPool(),
-      links: ["#about", "#skills", "#projects", "#writings", "#contact"]
-    };
-  }
-
-  const relatedSuggestions = results
-    .slice(1, 5)
-    .filter((result) => result.score > 8)
-    .map((result) => result.entry.question);
-
+function getDefaultChatbotConfig() {
   return {
-    answer: bestMatch.entry.answer,
-    suggestions: uniqueValues(
-      relatedSuggestions.concat(getSuggestionPool(bestMatch.entry.question))
-    ).slice(0, 6),
-    links: bestMatch.entry.links || []
+    assistantName: "Farhan Portfolio Assistant",
+    assistantStatus: "Online and portfolio-focused",
+    contactEmail: "alam22205341122@diu.edu.bd",
+    greeting:
+      "Hello. I am Farhan's portfolio assistant. I can answer questions about his experience, skills, projects, education, and contact details.",
+    offTopicMessage:
+      "I'm specifically trained to answer questions about Farhan Alam's portfolio and experience. For general questions, you might want to try a standard search. Want to see his resume instead?",
+    unknownMessage:
+      "I'm not quite sure about that. The best way to get that answered is to email Farhan directly at alam22205341122@diu.edu.bd.",
+    quickReplies: [
+      { label: "Download Resume", message: "Can I view Farhan's resume?" },
+      { label: "View Projects", message: "What projects has Farhan built?" },
+      { label: "Contact Info", message: "How can I contact Farhan?" }
+    ],
+    offTopicKeywords: ["politics", "weather", "history", "news", "sports"],
+    codeKeywords: ["write code", "debug my code", "leetcode", "algorithm"],
+    jailbreakKeywords: ["ignore previous instructions", "act as", "system prompt"],
+    intents: [
+      {
+        phrases: ["who is farhan", "tell me about farhan"],
+        keywords: ["farhan", "software engineer", "backend"],
+        answer:
+          "Farhan Alam is a Software Engineer based in Dhaka, Bangladesh, focused on backend systems, database design, and data-oriented engineering growth.",
+        links: [{ label: "Open About", href: "#about" }],
+        quickReplies: [{ label: "Projects", message: "What projects has Farhan built?" }]
+      }
+    ]
   };
 }
 
-function scrollChatToBottom() {
-  if (!chatbotMessages) {
+function prepareChatbotConfig() {
+  const baseConfig =
+    window.portfolioChatbotConfig && typeof window.portfolioChatbotConfig === "object"
+      ? window.portfolioChatbotConfig
+      : getDefaultChatbotConfig();
+
+  return {
+    ...getDefaultChatbotConfig(),
+    ...baseConfig,
+    quickReplies: Array.isArray(baseConfig.quickReplies)
+      ? baseConfig.quickReplies
+      : getDefaultChatbotConfig().quickReplies,
+    intents: (Array.isArray(baseConfig.intents) ? baseConfig.intents : []).map((intent) => ({
+      ...intent,
+      normalizedPhrases: uniqueValues((intent.phrases || []).map(normalizeText)),
+      normalizedKeywords: uniqueValues((intent.keywords || []).map(normalizeText))
+    }))
+  };
+}
+
+function setChatbotStatus(text) {
+  if (chatbotStatusTarget) {
+    chatbotStatusTarget.textContent = text;
+  }
+}
+
+function hideChatbotTeaser() {
+  if (!chatbotTeaser) {
     return;
   }
 
-  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  chatbotTeaser.classList.add("is-hidden");
 }
 
-function createChatMessage(sender, text, links = []) {
-  if (!chatbotMessages) {
+function scheduleTeaserHide() {
+  if (!chatbotTeaser) {
     return;
+  }
+
+  if (chatbotState.teaserTimer) {
+    window.clearTimeout(chatbotState.teaserTimer);
+  }
+
+  chatbotState.teaserTimer = window.setTimeout(hideChatbotTeaser, 7000);
+}
+
+function setChatbotOpen(isOpen) {
+  if (!chatbotPanel || !chatbotLauncher) {
+    return;
+  }
+
+  chatbotState.open = isOpen;
+  chatbotPanel.classList.toggle("is-open", isOpen);
+  chatbotLauncher.setAttribute("aria-expanded", String(isOpen));
+
+  if (isOpen) {
+    hideChatbotTeaser();
+    seedChatbotConversation();
+    window.setTimeout(() => {
+      if (chatbotInput) {
+        chatbotInput.focus();
+      }
+
+      scrollChatToBottom();
+    }, 120);
+  }
+}
+
+function scrollChatToBottom() {
+  if (chatbotMessages) {
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  }
+}
+
+function createChatLink(link) {
+  const anchor = document.createElement("a");
+  anchor.className = "chatbot-link";
+  anchor.href = link.href;
+  anchor.textContent = link.label || sectionLabels[link.href] || "Open Link";
+
+  if (link.href.startsWith("#")) {
+    anchor.addEventListener("click", (event) => {
+      event.preventDefault();
+      setChatbotOpen(false);
+      navigateToHash(link.href);
+    });
+  } else {
+    anchor.target = "_blank";
+    anchor.rel = "noreferrer";
+  }
+
+  return anchor;
+}
+
+function createChatMessage(role, text, links = []) {
+  if (!chatbotMessages) {
+    return null;
   }
 
   const article = document.createElement("article");
-  article.className = `chatbot-message chatbot-message--${sender}`;
+  article.className = `chatbot-message chatbot-message--${role}`;
 
   const label = document.createElement("span");
   label.className = "chatbot-message__label";
-  label.textContent = sender === "bot" ? "Site Bot" : "You";
+  label.textContent = role === "user" ? "You" : "Assistant";
   article.appendChild(label);
 
-  text
+  String(text || "")
     .split(/\n+/)
     .filter(Boolean)
     .forEach((paragraphText) => {
@@ -804,132 +656,253 @@ function createChatMessage(sender, text, links = []) {
       article.appendChild(paragraph);
     });
 
-  if (sender === "bot" && links.length) {
+  if (links.length) {
     const linkRow = document.createElement("div");
     linkRow.className = "chatbot-message__links";
-
-    uniqueValues(links).forEach((href) => {
-      const anchor = document.createElement("a");
-      anchor.className = "chatbot-link";
-      anchor.href = href;
-      anchor.textContent = sectionLabels[href] || "Open Section";
-
-      if (href.startsWith("#")) {
-        anchor.addEventListener("click", () => {
-          setChatbotOpen(false);
-        });
-      } else {
-        anchor.target = "_blank";
-        anchor.rel = "noreferrer";
-      }
-
-      linkRow.appendChild(anchor);
-    });
-
+    links.forEach((link) => linkRow.appendChild(createChatLink(link)));
     article.appendChild(linkRow);
   }
 
   chatbotMessages.appendChild(article);
   scrollChatToBottom();
+  return article;
 }
 
-function renderChatSuggestions(prompts) {
+function createTypingMessage() {
+  if (!chatbotMessages) {
+    return null;
+  }
+
+  const article = document.createElement("article");
+  article.className = "chatbot-message chatbot-message--bot chatbot-message--typing";
+
+  const label = document.createElement("span");
+  label.className = "chatbot-message__label";
+  label.textContent = "Assistant";
+  article.appendChild(label);
+
+  const typing = document.createElement("div");
+  typing.className = "chatbot-typing";
+
+  for (let index = 0; index < 3; index += 1) {
+    typing.appendChild(document.createElement("span"));
+  }
+
+  article.appendChild(typing);
+  chatbotMessages.appendChild(article);
+  scrollChatToBottom();
+  return article;
+}
+
+function renderQuickReplies(replies) {
   if (!chatbotSuggestions) {
     return;
   }
 
+  const items = Array.isArray(replies) && replies.length
+    ? replies
+    : chatbotState.config.quickReplies;
+
   chatbotSuggestions.innerHTML = "";
 
-  prompts.slice(0, 6).forEach((prompt) => {
+  items.slice(0, 6).forEach((item) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "chatbot-suggestion";
-    button.textContent = prompt;
+    button.textContent = item.label;
     button.addEventListener("click", () => {
       setChatbotOpen(true);
 
-      if (chatbotInput) {
-        chatbotInput.value = prompt;
+      if (item.href) {
+        if (item.href.startsWith("#")) {
+          setChatbotOpen(false);
+          navigateToHash(item.href);
+        } else {
+          window.open(item.href, "_blank", "noopener,noreferrer");
+        }
+        return;
       }
 
-      handleChatbotQuestion(prompt);
+      if (chatbotInput && item.message) {
+        chatbotInput.value = item.message;
+      }
+
+      if (item.message) {
+        handleChatbotQuestion(item.message);
+      }
     });
     chatbotSuggestions.appendChild(button);
   });
 }
 
 function seedChatbotConversation() {
-  if (chatbotState.greeted || !chatbotMessages) {
+  if (chatbotState.greeted || !chatbotMessages || !chatbotState.config) {
     return;
   }
 
   chatbotMessages.innerHTML = "";
-  createChatMessage(
-    "bot",
-    `Hi, I am Farhan's portfolio assistant. I am ready with ${chatbotState.trainedEntries.length} portfolio questions and can answer common visitor, employer, beginner, and educator-style questions about this site.`,
-    ["#about", "#projects", "#writings", "#contact"]
-  );
-  renderChatSuggestions(getSuggestionPool());
+  createChatMessage("bot", chatbotState.config.greeting, [
+    { label: "Open Projects", href: "#projects" },
+    { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" },
+    { label: "Open Hire Me", href: "#contact" }
+  ]);
+  renderQuickReplies(chatbotState.config.quickReplies);
   chatbotState.greeted = true;
 }
 
-function setChatbotOpen(isOpen) {
-  if (!chatbotPanel || !chatbotLauncher) {
-    return;
+function includesConfiguredPhrase(query, phrases) {
+  return phrases.some((phrase) => query.includes(phrase));
+}
+
+function scoreIntent(intent, queryNormalized, queryTokens) {
+  let score = 0;
+
+  intent.normalizedPhrases.forEach((phrase) => {
+    if (!phrase) {
+      return;
+    }
+
+    if (queryNormalized === phrase) {
+      score += 90;
+      return;
+    }
+
+    if (queryNormalized.includes(phrase) || phrase.includes(queryNormalized)) {
+      score += phrase.length > 8 ? 42 : 18;
+    }
+  });
+
+  intent.normalizedKeywords.forEach((keyword) => {
+    if (!keyword) {
+      return;
+    }
+
+    if (keyword.includes(" ")) {
+      if (queryNormalized.includes(keyword)) {
+        score += 12;
+      }
+      return;
+    }
+
+    if (queryTokens.includes(keyword)) {
+      score += 8;
+    }
+  });
+
+  return score;
+}
+
+function isOffTopicQuery(queryNormalized) {
+  const config = chatbotState.config;
+
+  return (
+    includesConfiguredPhrase(queryNormalized, config.offTopicKeywords.map(normalizeText)) ||
+    includesConfiguredPhrase(queryNormalized, config.codeKeywords.map(normalizeText)) ||
+    includesConfiguredPhrase(queryNormalized, config.jailbreakKeywords.map(normalizeText))
+  );
+}
+
+function resolveChatbotResponse(question) {
+  const config = chatbotState.config;
+  const trimmedQuestion = String(question || "").trim();
+  const queryNormalized = normalizeText(trimmedQuestion);
+  const queryTokens = tokenizeText(trimmedQuestion);
+
+  if (!trimmedQuestion) {
+    return {
+      answer:
+        "Please ask a portfolio-related question, for example about Farhan's skills, projects, resume, or contact details.",
+      links: [{ label: "Open Hire Me", href: "#contact" }],
+      quickReplies: config.quickReplies
+    };
   }
 
-  chatbotPanel.classList.toggle("is-open", isOpen);
-  chatbotLauncher.setAttribute("aria-expanded", String(isOpen));
-
-  if (isOpen) {
-    seedChatbotConversation();
-    window.setTimeout(() => {
-      chatbotInput?.focus();
-      scrollChatToBottom();
-    }, 120);
+  if (trimmedQuestion.length > 320) {
+    return {
+      answer:
+        "Please keep the question concise and focused on Farhan's portfolio. If the topic is detailed, the safest route is to email Farhan directly at alam22205341122@diu.edu.bd.",
+      links: [{ label: "Open Hire Me", href: "#contact" }],
+      quickReplies: config.quickReplies
+    };
   }
+
+  if (isOffTopicQuery(queryNormalized)) {
+    return {
+      answer: config.offTopicMessage,
+      links: [
+        { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" },
+        { label: "Open Projects", href: "#projects" }
+      ],
+      quickReplies: config.quickReplies
+    };
+  }
+
+  const rankedIntents = config.intents
+    .map((intent) => ({
+      intent,
+      score: scoreIntent(intent, queryNormalized, queryTokens)
+    }))
+    .sort((left, right) => right.score - left.score);
+
+  const bestIntent = rankedIntents[0];
+
+  if (!bestIntent || bestIntent.score < 10) {
+    return {
+      answer: config.unknownMessage,
+      links: [
+        { label: "Open Hire Me", href: "#contact" },
+        { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" }
+      ],
+      quickReplies: config.quickReplies
+    };
+  }
+
+  return {
+    answer: bestIntent.intent.answer,
+    links: bestIntent.intent.links || [],
+    quickReplies: bestIntent.intent.quickReplies || config.quickReplies
+  };
 }
 
 function handleChatbotQuestion(rawQuestion) {
-  const question = String(rawQuestion || "").trim();
-
-  if (!question || !chatbotMessages) {
-    renderChatSuggestions(getSuggestionPool());
+  if (!chatbotMessages || !chatbotState.config) {
     return;
   }
 
-  if (chatbotState.pendingResponseTimer) {
-    window.clearTimeout(chatbotState.pendingResponseTimer);
-    chatbotState.pendingResponseTimer = null;
+  const question = String(rawQuestion || "").trim();
+
+  if (!question) {
+    const response = resolveChatbotResponse("");
+    renderQuickReplies(response.quickReplies);
+    createChatMessage("bot", response.answer, response.links);
+    return;
+  }
+
+  if (chatbotState.typingTimer) {
+    window.clearTimeout(chatbotState.typingTimer);
+    chatbotState.typingTimer = null;
   }
 
   createChatMessage("user", question);
+  setChatbotStatus("Thinking...");
 
+  const typingMessage = createTypingMessage();
   const response = resolveChatbotResponse(question);
-  chatbotState.pendingResponseTimer = window.setTimeout(() => {
+
+  chatbotState.typingTimer = window.setTimeout(() => {
+    if (typingMessage) {
+      typingMessage.remove();
+    }
+
     createChatMessage("bot", response.answer, response.links);
-    renderChatSuggestions(response.suggestions);
-    chatbotState.pendingResponseTimer = null;
-  }, 180);
+    renderQuickReplies(response.quickReplies);
+    setChatbotStatus(chatbotState.config.assistantStatus);
+    chatbotState.typingTimer = null;
+  }, 320);
 
   if (chatbotInput) {
     chatbotInput.value = "";
   }
-}
-
-function hydrateChatbotKnowledge() {
-  const knowledgeBase =
-    Array.isArray(window.portfolioKnowledgeBase) && window.portfolioKnowledgeBase.length
-      ? window.portfolioKnowledgeBase
-      : getFallbackKnowledgeBase();
-
-  chatbotState.trainedEntries = trainChatbot(knowledgeBase);
-
-  if (chatbotMeta) {
-    chatbotMeta.textContent = `Indexed ${chatbotState.trainedEntries.length} portfolio questions for visitors, employers, beginners, and professors.`;
-  }
-
-  renderChatSuggestions(getSuggestionPool());
 }
 
 function initChatbot() {
@@ -944,30 +917,39 @@ function initChatbot() {
     return;
   }
 
-  hydrateChatbotKnowledge();
+  chatbotState.config = prepareChatbotConfig();
+
+  if (chatbotMeta) {
+    chatbotMeta.textContent = "Portfolio-only assistant with professional scope and direct contact fallback.";
+  }
+
+  setChatbotStatus(chatbotState.config.assistantStatus);
+  renderQuickReplies(chatbotState.config.quickReplies);
 
   if (chatbotState.initialized) {
     return;
   }
 
-  chatbotLauncher.addEventListener("click", () => {
-    if (!chatbotState.trainedEntries.length) {
-      hydrateChatbotKnowledge();
-    }
+  if (chatbotTeaser) {
+    chatbotTeaser.addEventListener("click", () => setChatbotOpen(true));
+    scheduleTeaserHide();
+  }
 
-    const nextState = !chatbotPanel.classList.contains("is-open");
-    setChatbotOpen(nextState);
+  chatbotLauncher.addEventListener("click", () => {
+    setChatbotOpen(!chatbotState.open);
   });
 
-  chatbotClose?.addEventListener("click", () => setChatbotOpen(false));
+  if (chatbotClose) {
+    chatbotClose.addEventListener("click", () => setChatbotOpen(false));
+  }
 
   chatbotForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    handleChatbotQuestion(chatbotInput.value || "");
+    handleChatbotQuestion(chatbotInput.value);
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && chatbotPanel.classList.contains("is-open")) {
+    if (event.key === "Escape" && chatbotState.open) {
       setChatbotOpen(false);
     }
   });
@@ -980,15 +962,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.dataset.theme ||
     (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 
-  try {
-    setTheme(initialTheme);
-  } catch (error) {
-    updateThemeToggle(initialTheme);
-  }
-
+  setTheme(initialTheme);
   typeLoop();
   initClock();
   initForm();
+  initRevealAnimations();
+  bindInPageLinks();
+  initChatbot();
 
   try {
     ensureMap();
@@ -998,19 +978,6 @@ document.addEventListener("DOMContentLoaded", () => {
       "Interactive map is temporarily unavailable. The Dhaka and DIU quick links still work.",
       true
     );
-  }
-
-  try {
-    initChatbot();
-    window.addEventListener("load", () => {
-      if (!chatbotState.trainedEntries.length) {
-        hydrateChatbotKnowledge();
-      }
-    });
-  } catch (error) {
-    if (chatbotMeta) {
-      chatbotMeta.textContent = "Site knowledge is reloading. Ask about projects, skills, or hiring.";
-    }
   }
 
   if (yearTarget) {
@@ -1028,23 +995,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (navToggle) {
     navToggle.addEventListener("click", () => toggleMobileMenu());
   }
-
-  navLinks.forEach((link) => {
-    link.addEventListener("click", () => toggleMobileMenu(true));
-  });
-
-  const revealObserver = new IntersectionObserver(handleReveal, {
-    threshold: 0.15,
-    rootMargin: "0px 0px -8% 0px"
-  });
-
-  revealItems.forEach((item) => revealObserver.observe(item));
-
-  const skillObserver = new IntersectionObserver(animateSkillBars, {
-    threshold: 0.35
-  });
-
-  skillItems.forEach((item) => skillObserver.observe(item));
 
   setActiveSection();
 

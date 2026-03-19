@@ -47,17 +47,6 @@
           </span>
         </a>
 
-        <button
-          class="nav-toggle"
-          type="button"
-          aria-label="Open navigation menu"
-          aria-expanded="false"
-          aria-controls="nav-menu"
-        >
-          <span></span>
-          <span></span>
-        </button>
-
         <div class="nav-menu" id="nav-menu">
           <a class="nav-link active" href="#home">Home</a>
           <a class="nav-link" href="#about">About</a>
@@ -68,10 +57,23 @@
           <a class="nav-link" href="#activities">Activities</a>
           <a class="nav-link" href="#education">Education</a>
           <a class="nav-link" href="#map-section">Map</a>
-          <a class="nav-link" href="#contact">Hire Me</a>
+        </div>
+
+        <div class="nav-actions">
+          <a class="nav-link nav-link--cta" href="#contact">Hire Me</a>
           <button class="theme-toggle" type="button" aria-label="Toggle color theme">
             <span class="theme-toggle__icon" aria-hidden="true">&#9790;</span>
             <span class="theme-toggle__label">Dark</span>
+          </button>
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+          >
+            <span></span>
+            <span></span>
           </button>
         </div>
       </nav>
@@ -1013,6 +1015,7 @@
     </footer>
 
     <div class="chatbot-shell" aria-live="polite">
+      <div class="chatbot-teaser" id="chatbot-teaser">Hi! Ask me about Farhan's experience.</div>
       <button
         class="chatbot-launcher"
         id="chatbot-launcher"
@@ -1020,10 +1023,11 @@
         aria-expanded="false"
         aria-controls="chatbot-panel"
       >
+        <span class="chatbot-launcher__icon" aria-hidden="true">&#128172;</span>
         <span class="chatbot-launcher__dot" aria-hidden="true"></span>
         <span class="chatbot-launcher__copy">
-          <strong>Ask the Site Bot</strong>
-          <small>Portfolio Q&amp;A assistant</small>
+          <strong>Ask Farhan's Assistant</strong>
+          <small>Portfolio and experience Q&amp;A</small>
         </span>
       </button>
 
@@ -1031,7 +1035,11 @@
         <header class="chatbot-panel__header">
           <div>
             <span class="section-kicker">Portfolio Assistant</span>
-            <h2>Ask about Farhan, the projects, or this site.</h2>
+            <h2>Ask about Farhan's experience, projects, and contact details.</h2>
+            <div class="chatbot-status-row">
+              <span class="chatbot-status-dot" aria-hidden="true"></span>
+              <span id="chatbot-status">Ready to answer portfolio questions</span>
+            </div>
             <p id="chatbot-meta">Loading site knowledge...</p>
           </div>
           <button class="chatbot-close" id="chatbot-close" type="button" aria-label="Close chatbot">
@@ -1041,7 +1049,7 @@
 
         <div class="chatbot-messages" id="chatbot-messages"></div>
 
-        <div class="chatbot-suggestions" id="chatbot-suggestions" aria-label="Suggested questions"></div>
+        <div class="chatbot-suggestions" id="chatbot-suggestions" aria-label="Quick replies"></div>
 
         <form class="chatbot-form" id="chatbot-form">
           <label class="chatbot-form__field">
@@ -1050,8 +1058,9 @@
               id="chatbot-input"
               name="question"
               type="text"
-              placeholder="Ask about skills, projects, writings, hiring, or site details..."
+              placeholder="Ask about skills, projects, resume, contact, or education..."
               autocomplete="off"
+              maxlength="320"
             />
           </label>
           <button class="button button--primary" type="submit">Ask</button>
