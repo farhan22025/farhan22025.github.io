@@ -842,29 +842,55 @@ html[data-theme="light"] .nav {
 .timeline-card,
 .education-card {
   position: relative;
-  padding: 1.8rem;
+  padding: 1.85rem 1.85rem 1.85rem 2.35rem;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
+    rgba(9, 27, 40, 0.96);
 }
 
 .timeline-card::before,
 .education-card::before {
   content: "";
   position: absolute;
-  inset: 1.25rem auto 1.25rem 0.9rem;
+  inset: 1rem auto 1rem 0.9rem;
   width: 3px;
   border-radius: 999px;
   background: var(--gradient-primary);
-  opacity: 0.7;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+.timeline-card::after,
+.education-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 17, 26, 0.1), rgba(6, 17, 26, 0.02));
+  z-index: 0;
 }
 
 .timeline-card > *,
 .education-card > * {
   position: relative;
-  margin-left: 1.2rem;
+  z-index: 2;
+  margin-left: 0;
 }
 
 .timeline-card p,
 .education-card p {
   margin-bottom: 0;
+}
+
+.timeline-card .timeline-tag,
+.education-card .timeline-tag {
+  margin-bottom: 1rem;
+}
+
+.timeline-card h3,
+.education-card h3 {
+  margin-bottom: 0.95rem;
 }
 
 .education-grid {
@@ -873,8 +899,7 @@ html[data-theme="light"] .nav {
 
 .education-card strong {
   display: inline-block;
-  margin-left: 1.2rem;
-  margin-top: 0.5rem;
+  margin-top: 0.7rem;
 }
 
 .map-layout {

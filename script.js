@@ -105,7 +105,9 @@ const mapState = {
 
 const chatbotState = {
   trainedEntries: [],
-  greeted: false
+  greeted: false,
+  initialized: false,
+  pendingResponseTimer: null
 };
 
 const dhakaTime24Formatter = new Intl.DateTimeFormat("en-GB", {
@@ -522,6 +524,108 @@ function getFallbackKnowledgeBase() {
   ];
 }
 
+function getStaticChatbotResponse(question) {
+  const query = normalizeText(question);
+
+  if (!query) {
+    return null;
+  }
+
+  if (
+    query.includes("hello") ||
+    query.includes("hi ") ||
+    query === "hi" ||
+    query.includes("hey")
+  ) {
+    return {
+      answer:
+        "Hello. I can help with Farhan's skills, projects, writings, contact details, education, and site features.",
+      suggestions: getSuggestionPool(),
+      links: ["#about", "#projects", "#writings", "#contact"]
+    };
+  }
+
+  if (query.includes("email") || query.includes("mail")) {
+    return {
+      answer:
+        "Farhan's primary email is alam22205341122@diu.edu.bd and his secondary email is f05076963@gmail.com.",
+      suggestions: [
+        "What is Farhan's phone number?",
+        "Can I message Farhan on WhatsApp?",
+        "Can I view Farhan's resume?"
+      ],
+      links: ["#contact"]
+    };
+  }
+
+  if (query.includes("phone") || query.includes("number") || query.includes("whatsapp")) {
+    return {
+      answer:
+        "You can reach Farhan at +8801610772313, and the Hire Me section also includes a WhatsApp Business button for direct contact.",
+      suggestions: [
+        "What are Farhan's email addresses?",
+        "Can I view Farhan's resume?",
+        "How can I hire or contact Farhan?"
+      ],
+      links: ["#contact"]
+    };
+  }
+
+  if (query.includes("resume") || query.includes("cv")) {
+    return {
+      answer:
+        "Yes. The site includes a direct resume PDF link in both the hero section and the Hire Me section.",
+      suggestions: [
+        "How can I hire or contact Farhan?",
+        "Where is Farhan's GitHub?",
+        "What projects has Farhan built?"
+      ],
+      links: ["#home", "#contact"]
+    };
+  }
+
+  if (query.includes("project") || query.includes("github")) {
+    return {
+      answer:
+        "The Projects and Writings sections both include GitHub links so visitors can open project folders and notes directly inside the live repository.",
+      suggestions: [
+        "What projects has Farhan built?",
+        "What is in the Writings and Research section?",
+        "Can I view the source of this portfolio?"
+      ],
+      links: ["#projects", "#writings", "#contact"]
+    };
+  }
+
+  if (query.includes("write") || query.includes("research") || query.includes("paper")) {
+    return {
+      answer:
+        "The Writings and Research section contains thesis notes, backend and data engineering notes, and software engineering writeups linked to GitHub.",
+      suggestions: [
+        "What are the Deepfake Detection Thesis Notes?",
+        "What are the Backend and Data Engineering Notes?",
+        "Can I view the source of this portfolio?"
+      ],
+      links: ["#writings"]
+    };
+  }
+
+  if (query.includes("map") || query.includes("location") || query.includes("dhaka")) {
+    return {
+      answer:
+        "The map section shows Farhan's location in Dhaka and Daffodil International University in Ashulia, with direct Google Maps links as backup.",
+      suggestions: [
+        "Where is Farhan based?",
+        "What does the map show?",
+        "How can I hire or contact Farhan?"
+      ],
+      links: ["#map-section", "#contact"]
+    };
+  }
+
+  return null;
+}
+
 function trainChatbot(entries) {
   return entries.map((entry) => {
     const phrases = uniqueValues([
@@ -638,10 +742,16 @@ function getSuggestionPool(excludedQuestion = "") {
 }
 
 function resolveChatbotResponse(question) {
+  const staticResponse = getStaticChatbotResponse(question);
+
+  if (staticResponse) {
+    return staticResponse;
+  }
+
   const results = getTopChatbotMatches(question);
   const bestMatch = results[0];
 
-  if (!bestMatch || bestMatch.score < 10) {
+  if (!bestMatch || bestMatch.score < 7) {
     return {
       answer:
         "I can answer questions based on this portfolio. Try asking about Farhan's skills, projects, writings, education, contact details, the map, or how this site was built.",
@@ -736,6 +846,8 @@ function renderChatSuggestions(prompts) {
     button.className = "chatbot-suggestion";
     button.textContent = prompt;
     button.addEventListener("click", () => {
+      setChatbotOpen(true);
+
       if (chatbotInput) {
         chatbotInput.value = prompt;
       }
@@ -782,18 +894,42 @@ function handleChatbotQuestion(rawQuestion) {
   const question = String(rawQuestion || "").trim();
 
   if (!question || !chatbotMessages) {
+    renderChatSuggestions(getSuggestionPool());
     return;
+  }
+
+  if (chatbotState.pendingResponseTimer) {
+    window.clearTimeout(chatbotState.pendingResponseTimer);
+    chatbotState.pendingResponseTimer = null;
   }
 
   createChatMessage("user", question);
 
   const response = resolveChatbotResponse(question);
-  createChatMessage("bot", response.answer, response.links);
-  renderChatSuggestions(response.suggestions);
+  chatbotState.pendingResponseTimer = window.setTimeout(() => {
+    createChatMessage("bot", response.answer, response.links);
+    renderChatSuggestions(response.suggestions);
+    chatbotState.pendingResponseTimer = null;
+  }, 180);
 
   if (chatbotInput) {
     chatbotInput.value = "";
   }
+}
+
+function hydrateChatbotKnowledge() {
+  const knowledgeBase =
+    Array.isArray(window.portfolioKnowledgeBase) && window.portfolioKnowledgeBase.length
+      ? window.portfolioKnowledgeBase
+      : getFallbackKnowledgeBase();
+
+  chatbotState.trainedEntries = trainChatbot(knowledgeBase);
+
+  if (chatbotMeta) {
+    chatbotMeta.textContent = `Indexed ${chatbotState.trainedEntries.length} portfolio questions for visitors, employers, beginners, and professors.`;
+  }
+
+  renderChatSuggestions(getSuggestionPool());
 }
 
 function initChatbot() {
@@ -808,20 +944,17 @@ function initChatbot() {
     return;
   }
 
-  const knowledgeBase =
-    Array.isArray(window.portfolioKnowledgeBase) && window.portfolioKnowledgeBase.length
-      ? window.portfolioKnowledgeBase
-      : getFallbackKnowledgeBase();
+  hydrateChatbotKnowledge();
 
-  chatbotState.trainedEntries = trainChatbot(knowledgeBase);
-
-  if (chatbotMeta) {
-    chatbotMeta.textContent = `Indexed ${chatbotState.trainedEntries.length} portfolio questions for visitors, employers, beginners, and professors.`;
+  if (chatbotState.initialized) {
+    return;
   }
 
-  renderChatSuggestions(getSuggestionPool());
-
   chatbotLauncher.addEventListener("click", () => {
+    if (!chatbotState.trainedEntries.length) {
+      hydrateChatbotKnowledge();
+    }
+
     const nextState = !chatbotPanel.classList.contains("is-open");
     setChatbotOpen(nextState);
   });
@@ -838,6 +971,8 @@ function initChatbot() {
       setChatbotOpen(false);
     }
   });
+
+  chatbotState.initialized = true;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -867,6 +1002,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   try {
     initChatbot();
+    window.addEventListener("load", () => {
+      if (!chatbotState.trainedEntries.length) {
+        hydrateChatbotKnowledge();
+      }
+    });
   } catch (error) {
     if (chatbotMeta) {
       chatbotMeta.textContent = "Site knowledge is reloading. Ask about projects, skills, or hiring.";
