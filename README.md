@@ -2,6 +2,10 @@
 
 A modern, minimal, and fully responsive personal portfolio website built with plain HTML, CSS, and JavaScript for easy GitHub Pages deployment.
 
+Link to my Live Portfolio Site
+
+--> https://farhan22025.github.io/ <--
+
 ## Folder Structure
 
 ```text
