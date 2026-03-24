@@ -9,5 +9,9 @@ Desktop.ini
 # Logs
 *.log
 
+# Python
+__pycache__/
+tests/artifacts/
+
 # Local scratch notes
 Prompt to Codex.txt

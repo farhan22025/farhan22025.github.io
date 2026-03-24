@@ -44,6 +44,22 @@ To deploy the portfolio on GitHub Pages:
 
 Each extra project folder in this repository includes its own `README.md` with project-specific run instructions.
 
+To run a real browser smoke test locally:
+
+1. Install the testing dependency:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+2. Run the browser smoke test:
+
+```bash
+python tests/browser_smoke_test.py
+```
+
+This starts a temporary local server, opens the portfolio in a real browser engine, and checks the theme toggle, Hire Me button scroll, map load, and chatbot replies.
+
 ## Objective
 
 The objective of this repository is to present Farhan Alam's professional portfolio in a clean and accessible way, while also keeping supporting projects, documentation, and learning work organized in one GitHub-ready place.

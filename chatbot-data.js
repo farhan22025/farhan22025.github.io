@@ -1,10 +1,16 @@
 window.portfolioChatbotConfig = {
   assistantName: "Farhan Portfolio Assistant",
-  assistantStatus: "Online and portfolio-focused",
+  assistantStatus: "Ready for portfolio questions",
   ownerName: "Farhan Alam",
   contactEmail: "alam22205341122@diu.edu.bd",
   secondaryEmail: "f05076963@gmail.com",
   phone: "+8801610772313",
+  resumeUrl: "assets/farhan-cv-resume.pdf",
+  githubUrl: "https://github.com/farhan22025",
+  siteSourceUrl: "https://github.com/farhan22025/farhan22025.github.io",
+  facebookUrl: "https://www.facebook.com/share/171d7mt7rZ/",
+  whatsappUrl:
+    "https://wa.me/8801610772313?text=Hi%20Farhan%2C%20I%20visited%20your%20portfolio%20and%20wanted%20to%20connect.",
   greeting:
     "Hello. I am Farhan's portfolio assistant. I can answer questions about his experience, skills, projects, writings, education, and contact details.",
   offTopicMessage:

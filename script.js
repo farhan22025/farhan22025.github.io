@@ -91,6 +91,70 @@ const stopWords = new Set([
   "your"
 ]);
 
+const chatbotTextAliasRules = [
+  [/\bassalamu alaikum\b/g, " hello "],
+  [/\bassalamualaikum\b/g, " hello "],
+  [/\bsalaam\b/g, " hello "],
+  [/\bhi there\b/g, " hello "],
+  [/\bhey there\b/g, " hello "],
+  [/\bhello there\b/g, " hello "],
+  [/\be-mail\b/g, " email "],
+  [/\bmail\b/g, " email "],
+  [/\bcv\b/g, " resume "],
+  [/\bphone number\b/g, " phone "],
+  [/\bmobile number\b/g, " phone "],
+  [/\bcontact number\b/g, " phone "],
+  [/\bcontact details?\b/g, " contact "],
+  [/\bgithub profile\b/g, " github "],
+  [/\bsource code\b/g, " github site source "],
+  [/\bsite source\b/g, " github site source "],
+  [/\bresearch papers?\b/g, " writings research papers "],
+  [/\bwriteups?\b/g, " writings research "],
+  [/\bclubs?\b/g, " activities club "],
+  [/\bcommunities\b/g, " activities community "],
+  [/\bwhat can you do\b/g, " help "],
+  [/\bhow can you help\b/g, " help "],
+  [/\bwhat can i ask\b/g, " help "],
+  [/\bhow do i reach\b/g, " contact "],
+  [/\bhow can i reach\b/g, " contact "],
+  [/\bhow do i contact\b/g, " contact "],
+  [/\bhow can i contact\b/g, " contact "],
+  [/\bhow do i hire\b/g, " hire contact "],
+  [/\bhow can i hire\b/g, " hire contact "],
+  [/\b(?:his|him|he|your)\b/g, " farhan "]
+];
+
+const chatbotGreetingPhrases = [
+  "hi",
+  "hello",
+  "hey",
+  "good morning",
+  "good afternoon",
+  "good evening"
+];
+
+const chatbotHelpPhrases = [
+  "help",
+  "what can you do",
+  "how can you help",
+  "what can i ask"
+];
+
+const chatbotThanksPhrases = [
+  "thanks",
+  "thank you",
+  "thankyou",
+  "thx",
+  "appreciate it"
+];
+
+const chatbotFarewellPhrases = [
+  "bye",
+  "goodbye",
+  "see you",
+  "talk later"
+];
+
 let typingPhraseIndex = 0;
 let typingCharacterIndex = 0;
 let typingDeleting = false;
@@ -109,6 +173,7 @@ const chatbotState = {
   initialized: false,
   greeted: false,
   open: false,
+  lastIntent: null,
   typingTimer: null,
   teaserTimer: null
 };
@@ -130,11 +195,15 @@ const dhakaTime12Formatter = new Intl.DateTimeFormat("en-US", {
 });
 
 function normalizeText(text) {
-  return String(text || "")
+  let normalized = String(text || "")
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/['’]/g, "");
+
+  chatbotTextAliasRules.forEach(([pattern, replacement]) => {
+    normalized = normalized.replace(pattern, replacement);
+  });
+
+  return normalized.replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function tokenizeText(text) {
@@ -146,6 +215,98 @@ function tokenizeText(text) {
 
 function uniqueValues(values) {
   return [...new Set(values.filter(Boolean))];
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function includesPhrase(queryNormalized, phrase) {
+  if (!queryNormalized || !phrase) {
+    return false;
+  }
+
+  const normalizedPhrase = normalizeText(phrase);
+
+  if (!normalizedPhrase) {
+    return false;
+  }
+
+  if (queryNormalized === normalizedPhrase) {
+    return true;
+  }
+
+  return new RegExp(`(^|\\s)${escapeRegExp(normalizedPhrase)}($|\\s)`).test(queryNormalized);
+}
+
+function includesAnyPhrase(queryNormalized, phrases) {
+  return phrases.some((phrase) => includesPhrase(queryNormalized, normalizeText(phrase)));
+}
+
+function includesAnyToken(queryTokens, candidates) {
+  return candidates.some((candidate) => queryTokens.includes(candidate));
+}
+
+function includesAllTokens(queryTokens, candidates) {
+  return candidates.every((candidate) => queryTokens.includes(candidate));
+}
+
+function getChatbotIntentById(intentId) {
+  return chatbotState.config?.intents.find((intent) => intent.id === intentId) || null;
+}
+
+function getChatbotLinkSet() {
+  const config = chatbotState.config || {};
+  const resumeUrl = config.resumeUrl || "assets/farhan-cv-resume.pdf";
+  const githubUrl = config.githubUrl || "https://github.com/farhan22025";
+  const siteSourceUrl = config.siteSourceUrl || githubUrl;
+  const facebookUrl = config.facebookUrl || "https://www.facebook.com/share/171d7mt7rZ/";
+  const whatsappUrl =
+    config.whatsappUrl ||
+    "https://wa.me/8801610772313?text=Hi%20Farhan%2C%20I%20visited%20your%20portfolio%20and%20wanted%20to%20connect.";
+
+  return {
+    about: { label: "Open About", href: "#about" },
+    skills: { label: "Open Skills", href: "#skills" },
+    projects: { label: "Open Projects", href: "#projects" },
+    writings: { label: "Open Writings", href: "#writings" },
+    activities: { label: "Open Activities", href: "#activities" },
+    education: { label: "Open Education", href: "#education" },
+    map: { label: "Open Map", href: "#map-section" },
+    hire: { label: "Open Hire Me", href: "#contact" },
+    resume: { label: "Open Resume", href: resumeUrl },
+    github: { label: "Open GitHub", href: githubUrl },
+    siteSource: { label: "Open Site Source", href: siteSourceUrl },
+    facebook: { label: "Open Facebook", href: facebookUrl },
+    whatsapp: { label: "Open WhatsApp", href: whatsappUrl }
+  };
+}
+
+function createChatbotResponse(answer, links = [], quickReplies = null, intentId = null) {
+  return {
+    answer,
+    links,
+    intentId,
+    quickReplies:
+      Array.isArray(quickReplies) && quickReplies.length
+        ? quickReplies
+        : chatbotState.config?.quickReplies || []
+  };
+}
+
+function createIntentResponse(intentId) {
+  const intent = getChatbotIntentById(intentId);
+
+  if (!intent) {
+    return null;
+  }
+
+  return createChatbotResponse(
+    intent.answer,
+    intent.links || [],
+    intent.quickReplies || chatbotState.config.quickReplies,
+    intent.id || intentId
+  );
 }
 
 function typeLoop() {
@@ -511,8 +672,17 @@ function initForm() {
 function getDefaultChatbotConfig() {
   return {
     assistantName: "Farhan Portfolio Assistant",
-    assistantStatus: "Online and portfolio-focused",
+    assistantStatus: "Ready for portfolio questions",
+    ownerName: "Farhan Alam",
     contactEmail: "alam22205341122@diu.edu.bd",
+    secondaryEmail: "f05076963@gmail.com",
+    phone: "+8801610772313",
+    resumeUrl: "assets/farhan-cv-resume.pdf",
+    githubUrl: "https://github.com/farhan22025",
+    siteSourceUrl: "https://github.com/farhan22025/farhan22025.github.io",
+    facebookUrl: "https://www.facebook.com/share/171d7mt7rZ/",
+    whatsappUrl:
+      "https://wa.me/8801610772313?text=Hi%20Farhan%2C%20I%20visited%20your%20portfolio%20and%20wanted%20to%20connect.",
     greeting:
       "Hello. I am Farhan's portfolio assistant. I can answer questions about his experience, skills, projects, education, and contact details.",
     offTopicMessage:
@@ -741,17 +911,18 @@ function seedChatbotConversation() {
   }
 
   chatbotMessages.innerHTML = "";
+  const links = getChatbotLinkSet();
   createChatMessage("bot", chatbotState.config.greeting, [
-    { label: "Open Projects", href: "#projects" },
-    { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" },
-    { label: "Open Hire Me", href: "#contact" }
+    links.projects,
+    links.resume,
+    links.hire
   ]);
   renderQuickReplies(chatbotState.config.quickReplies);
   chatbotState.greeted = true;
 }
 
 function includesConfiguredPhrase(query, phrases) {
-  return phrases.some((phrase) => query.includes(phrase));
+  return phrases.some((phrase) => includesPhrase(query, normalizeText(phrase)));
 }
 
 function scoreIntent(intent, queryNormalized, queryTokens) {
@@ -763,12 +934,24 @@ function scoreIntent(intent, queryNormalized, queryTokens) {
     }
 
     if (queryNormalized === phrase) {
-      score += 90;
+      score += 100;
       return;
     }
 
-    if (queryNormalized.includes(phrase) || phrase.includes(queryNormalized)) {
-      score += phrase.length > 8 ? 42 : 18;
+    if (queryNormalized.includes(phrase)) {
+      score += phrase.length > 8 ? 46 : 20;
+      return;
+    }
+
+    const phraseTokens = tokenizeText(phrase);
+    const matchedTokens = phraseTokens.filter((token) => queryTokens.includes(token)).length;
+
+    if (matchedTokens) {
+      score += matchedTokens * 6;
+
+      if (matchedTokens === phraseTokens.length && phraseTokens.length > 1) {
+        score += 16;
+      }
     }
   });
 
@@ -779,27 +962,233 @@ function scoreIntent(intent, queryNormalized, queryTokens) {
 
     if (keyword.includes(" ")) {
       if (queryNormalized.includes(keyword)) {
-        score += 12;
+        score += 14;
+        return;
+      }
+
+      const keywordTokens = tokenizeText(keyword);
+      const matchedTokens = keywordTokens.filter((token) => queryTokens.includes(token)).length;
+
+      if (matchedTokens) {
+        score += matchedTokens * 4;
       }
       return;
     }
 
     if (queryTokens.includes(keyword)) {
-      score += 8;
+      score += 10;
     }
   });
 
   return score;
 }
 
-function isOffTopicQuery(queryNormalized) {
+function isOffTopicQuery(queryNormalized, queryTokens = []) {
   const config = chatbotState.config;
+  const codeActionTokens = ["write", "generate", "debug", "fix", "build", "make", "solve"];
+  const codeObjectTokens = ["code", "script", "program", "app", "algorithm"];
+  const hasCodeAction = includesAnyToken(queryTokens, codeActionTokens);
+  const hasCodeObject = includesAnyToken(queryTokens, codeObjectTokens);
 
   return (
     includesConfiguredPhrase(queryNormalized, config.offTopicKeywords.map(normalizeText)) ||
     includesConfiguredPhrase(queryNormalized, config.codeKeywords.map(normalizeText)) ||
-    includesConfiguredPhrase(queryNormalized, config.jailbreakKeywords.map(normalizeText))
+    includesConfiguredPhrase(queryNormalized, config.jailbreakKeywords.map(normalizeText)) ||
+    (hasCodeAction && hasCodeObject)
   );
+}
+
+function resolveChatbotMetaResponse(queryNormalized) {
+  const config = chatbotState.config;
+  const ownerName = config.ownerName || "Farhan Alam";
+  const links = getChatbotLinkSet();
+
+  if (includesAnyPhrase(queryNormalized, chatbotGreetingPhrases)) {
+    return createChatbotResponse(
+      `Hello. I can help you explore ${ownerName}'s skills, projects, writings, education, and contact details. You can ask about the resume, a featured project, or the best way to reach him.`,
+      [links.projects, links.resume, links.hire],
+      [
+        { label: "Top Skills", message: "What are Farhan's main skills?" },
+        { label: "View Projects", message: "What projects has Farhan built?" },
+        { label: "Contact Info", message: "How can I contact Farhan?" }
+      ],
+      "greeting"
+    );
+  }
+
+  if (includesAnyPhrase(queryNormalized, chatbotHelpPhrases)) {
+    return createChatbotResponse(
+      `You can ask me about ${ownerName}'s skills, featured projects, writings, education, location, resume, or hiring contact details.`,
+      [links.skills, links.projects, links.hire],
+      [
+        { label: "Resume", message: "Can I see the resume?" },
+        { label: "Deepfake Thesis", message: "Tell me about the deepfake thesis." },
+        { label: "Contact", message: "What email should I use?" }
+      ],
+      "help"
+    );
+  }
+
+  if (includesAnyPhrase(queryNormalized, chatbotThanksPhrases)) {
+    return createChatbotResponse(
+      `You're welcome. If you want, I can still point you to ${ownerName}'s resume, featured projects, or direct contact details.`,
+      [links.resume, links.projects, links.hire],
+      chatbotState.config.quickReplies,
+      "thanks"
+    );
+  }
+
+  if (includesAnyPhrase(queryNormalized, chatbotFarewellPhrases)) {
+    return createChatbotResponse(
+      `Happy to help. You can come back anytime for ${ownerName}'s projects, resume, or hiring details.`,
+      [links.projects, links.resume, links.hire],
+      chatbotState.config.quickReplies,
+      "farewell"
+    );
+  }
+
+  return null;
+}
+
+function resolveRuleBasedChatbotResponse(queryNormalized, queryTokens) {
+  const config = chatbotState.config;
+  const ownerName = config.ownerName || "Farhan Alam";
+  const contactEmail = config.contactEmail || "alam22205341122@diu.edu.bd";
+  const secondaryEmail = config.secondaryEmail || "";
+  const phone = config.phone || "+8801610772313";
+  const links = getChatbotLinkSet();
+
+  if (includesAnyToken(queryTokens, ["email"])) {
+    return createChatbotResponse(
+      `Use ${contactEmail} as the primary email. ${secondaryEmail ? `${secondaryEmail} is the secondary email if you need an alternate route.` : ""}`.trim(),
+      [links.hire, links.resume],
+      [
+        { label: "Phone Number", message: "What is his phone number?" },
+        { label: "WhatsApp", message: "Can I contact Farhan on WhatsApp?" },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "contact-email"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["phone", "whatsapp", "call"])) {
+    return createChatbotResponse(
+      `${ownerName}'s direct phone number is ${phone}. The Hire Me section also includes a WhatsApp Business button for a faster direct message.`,
+      [links.hire, links.whatsapp],
+      [
+        { label: "Primary Email", message: "What email should I use?" },
+        { label: "Contact Info", message: "How can I contact Farhan?" },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "contact-phone"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["contact", "hire", "facebook"])) {
+    return createChatbotResponse(
+      `The best contact route is ${contactEmail}. The portfolio also provides the secondary email${secondaryEmail ? ` ${secondaryEmail},` : ""} phone, WhatsApp, Facebook, GitHub, and the hosted resume in the Hire Me section.`,
+      [links.hire, links.facebook, links.whatsapp],
+      [
+        { label: "Primary Email", message: "What email should I use?" },
+        { label: "Phone Number", message: "What is his phone number?" },
+        { label: "GitHub", message: "Where is Farhan's GitHub?" }
+      ],
+      "contact"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["resume", "pdf"])) {
+    return createChatbotResponse(
+      `Yes. ${ownerName}'s resume is available directly on the portfolio and opens as a hosted PDF.`,
+      [links.resume, links.hire],
+      [
+        { label: "Contact", message: "How can I contact Farhan?" },
+        { label: "Projects", message: "What projects has Farhan built?" },
+        { label: "GitHub", message: "Where is Farhan's GitHub?" }
+      ],
+      "resume"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["github", "repo", "repository", "source"])) {
+    return createChatbotResponse(
+      `${ownerName}'s GitHub profile and the source for this portfolio are both available from the site.`,
+      [links.github, links.siteSource],
+      [
+        { label: "Projects", message: "What projects has Farhan built?" },
+        { label: "Writings", message: "What is in the writings section?" },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "github"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["site", "portfolio", "html", "css", "javascript", "theme", "chatbot"])) {
+    return createIntentResponse("site");
+  }
+
+  if (
+    includesAnyToken(queryTokens, ["location", "map", "dhaka", "bangladesh", "ashulia", "based"]) ||
+    includesPhrase(queryNormalized, "where is farhan")
+  ) {
+    return createIntentResponse("location");
+  }
+
+  if (includesAnyToken(queryTokens, ["education", "study", "studied", "university", "cgpa", "degree"])) {
+    return createIntentResponse("education");
+  }
+
+  if (includesAnyToken(queryTokens, ["activity", "activities", "club", "community", "volunteer", "hackathon"])) {
+    return createIntentResponse("activities");
+  }
+
+  if (includesAnyToken(queryTokens, ["writing", "writings", "research", "paper", "papers", "notes"])) {
+    return createIntentResponse("writings");
+  }
+
+  if (includesAnyToken(queryTokens, ["deepfake", "thesis", "gpu", "vision"])) {
+    return createIntentResponse("deepfake");
+  }
+
+  if (includesAllTokens(queryTokens, ["smart", "waste"]) || includesAnyToken(queryTokens, ["erd", "uml"])) {
+    return createIntentResponse("smart-waste");
+  }
+
+  if (includesAllTokens(queryTokens, ["coffee", "shop"]) || includesAnyToken(queryTokens, ["pos"])) {
+    return createIntentResponse("coffee-shop");
+  }
+
+  if (includesAnyToken(queryTokens, ["banking", "bank"])) {
+    return createIntentResponse("banking");
+  }
+
+  if (
+    includesAnyToken(queryTokens, [
+      "skill",
+      "skills",
+      "python",
+      "java",
+      "php",
+      "sql",
+      "mysql",
+      "backend",
+      "database",
+      "oop",
+      "testing"
+    ])
+  ) {
+    return createIntentResponse("skills");
+  }
+
+  if (includesAnyToken(queryTokens, ["project", "projects", "built", "work"])) {
+    return createIntentResponse("projects");
+  }
+
+  if (includesPhrase(queryNormalized, "who is farhan") || includesPhrase(queryNormalized, "about farhan")) {
+    return createIntentResponse("about");
+  }
+
+  return null;
 }
 
 function resolveChatbotResponse(question) {
@@ -807,34 +1196,45 @@ function resolveChatbotResponse(question) {
   const trimmedQuestion = String(question || "").trim();
   const queryNormalized = normalizeText(trimmedQuestion);
   const queryTokens = tokenizeText(trimmedQuestion);
+  const links = getChatbotLinkSet();
 
   if (!trimmedQuestion) {
-    return {
-      answer:
-        "Please ask a portfolio-related question, for example about Farhan's skills, projects, resume, or contact details.",
-      links: [{ label: "Open Hire Me", href: "#contact" }],
-      quickReplies: config.quickReplies
-    };
+    return createChatbotResponse(
+      "Please ask a portfolio-related question, for example about Farhan's skills, projects, resume, or contact details.",
+      [links.hire],
+      config.quickReplies,
+      "empty"
+    );
   }
 
   if (trimmedQuestion.length > 320) {
-    return {
-      answer:
-        "Please keep the question concise and focused on Farhan's portfolio. If the topic is detailed, the safest route is to email Farhan directly at alam22205341122@diu.edu.bd.",
-      links: [{ label: "Open Hire Me", href: "#contact" }],
-      quickReplies: config.quickReplies
-    };
+    return createChatbotResponse(
+      "Please keep the question concise and focused on Farhan's portfolio. If the topic is detailed, the safest route is to email Farhan directly at alam22205341122@diu.edu.bd.",
+      [links.hire],
+      config.quickReplies,
+      "too-long"
+    );
   }
 
-  if (isOffTopicQuery(queryNormalized)) {
-    return {
-      answer: config.offTopicMessage,
-      links: [
-        { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" },
-        { label: "Open Projects", href: "#projects" }
-      ],
-      quickReplies: config.quickReplies
-    };
+  const metaResponse = resolveChatbotMetaResponse(queryNormalized);
+
+  if (metaResponse) {
+    return metaResponse;
+  }
+
+  if (isOffTopicQuery(queryNormalized, queryTokens)) {
+    return createChatbotResponse(
+      config.offTopicMessage,
+      [links.resume, links.projects],
+      config.quickReplies,
+      "off-topic"
+    );
+  }
+
+  const conversationalResponse = resolveRuleBasedChatbotResponse(queryNormalized, queryTokens);
+
+  if (conversationalResponse) {
+    return conversationalResponse;
   }
 
   const rankedIntents = config.intents
@@ -846,22 +1246,21 @@ function resolveChatbotResponse(question) {
 
   const bestIntent = rankedIntents[0];
 
-  if (!bestIntent || bestIntent.score < 10) {
-    return {
-      answer: config.unknownMessage,
-      links: [
-        { label: "Open Hire Me", href: "#contact" },
-        { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" }
-      ],
-      quickReplies: config.quickReplies
-    };
+  if (!bestIntent || bestIntent.score < 11) {
+    return createChatbotResponse(
+      config.unknownMessage,
+      [links.hire, links.resume],
+      config.quickReplies,
+      "unknown"
+    );
   }
 
-  return {
-    answer: bestIntent.intent.answer,
-    links: bestIntent.intent.links || [],
-    quickReplies: bestIntent.intent.quickReplies || config.quickReplies
-  };
+  return createChatbotResponse(
+    bestIntent.intent.answer,
+    bestIntent.intent.links || [],
+    bestIntent.intent.quickReplies || config.quickReplies,
+    bestIntent.intent.id || "intent"
+  );
 }
 
 function handleChatbotQuestion(rawQuestion) {
@@ -896,6 +1295,7 @@ function handleChatbotQuestion(rawQuestion) {
 
     createChatMessage("bot", response.answer, response.links);
     renderQuickReplies(response.quickReplies);
+    chatbotState.lastIntent = response.intentId || null;
     setChatbotStatus(chatbotState.config.assistantStatus);
     chatbotState.typingTimer = null;
   }, 320);
