@@ -31,6 +31,9 @@ CHATBOT_CASES = [
     ("What is his phone number?", ["+8801610772313", "whatsapp"]),
     ("Can I see the resume?", ["resume", "pdf"]),
     ("Where is he based?", ["dhaka", "ashulia"]),
+    ("Give me a recruiter summary of Farhan.", ["projects", "resume", "formal"]),
+    ("Which projects prove Farhan's backend skills?", ["smart waste", "banking", "coffee shop"]),
+    ("Is he available for freelance work?", ["hire me", "projects", "contact"]),
     ("Can you write code for me?", ["specifically trained", "portfolio"]),
     ("Can you write Python code for me?", ["specifically trained", "portfolio"]),
 ]
@@ -107,6 +110,30 @@ def run() -> int:
                     assert "Farhan Alam" in title, f"Unexpected page title: {title}"
                     print(f"PASS title: {title}")
 
+                    cta_before = page.locator(".nav-link--cta").evaluate(
+                        "el => getComputedStyle(el).transform"
+                    )
+                    page.locator(".nav-link--cta").hover()
+                    page.wait_for_timeout(180)
+                    cta_after = page.locator(".nav-link--cta").evaluate(
+                        "el => getComputedStyle(el).transform"
+                    )
+                    assert cta_before != cta_after, "Hire Me CTA hover animation did not change styles."
+                    print("PASS hire me CTA hover animation")
+
+                    theme_icon_before = page.locator(".theme-toggle__icon").evaluate(
+                        "el => getComputedStyle(el).transform"
+                    )
+                    page.locator(".theme-toggle").hover()
+                    page.wait_for_timeout(180)
+                    theme_icon_after = page.locator(".theme-toggle__icon").evaluate(
+                        "el => getComputedStyle(el).transform"
+                    )
+                    assert (
+                        theme_icon_before != theme_icon_after
+                    ), "Theme toggle hover animation did not change icon styles."
+                    print("PASS theme toggle hover animation")
+
                     theme_before = page.locator("html").get_attribute("data-theme")
                     page.locator(".theme-toggle").click()
                     page.wait_for_timeout(250)
@@ -128,13 +155,31 @@ def run() -> int:
                     page.locator("#chatbot-launcher").click()
                     page.wait_for_selector("#chatbot-panel.is-open", timeout=4000)
                     greeting = page.locator(".chatbot-message--bot").first.inner_text().strip()
-                    assert "portfolio assistant" in greeting.lower(), "Chatbot greeting did not render."
+                    assert "ai portfolio assistant" in greeting.lower(), "Chatbot greeting did not render."
                     print("PASS chatbot panel open")
+
+                    page.locator("#chatbot-clear").click()
+                    page.wait_for_timeout(350)
+                    message_count_after_clear = page.locator(".chatbot-message--bot").count()
+                    assert message_count_after_clear >= 1, "Chatbot clear did not reseed the greeting."
+                    print("PASS chatbot clear action")
 
                     for question, expected_snippets in CHATBOT_CASES:
                         reply = ask_chatbot(page, question)
                         assert_contains(reply, expected_snippets, f"Chatbot reply for '{question}'")
                         print(f"PASS chatbot: {question}")
+
+                    mobile = browser.new_page(viewport={"width": 390, "height": 844})
+                    mobile.goto(f"http://127.0.0.1:{port}/", wait_until="networkidle", timeout=120000)
+                    launcher_box = mobile.locator("#chatbot-launcher").bounding_box()
+                    launcher_width = launcher_box["width"]
+                    launcher_y = launcher_box["y"]
+                    teaser_visible = mobile.locator("#chatbot-teaser").is_visible()
+                    assert launcher_width < 90, f"Mobile launcher is still too wide: {launcher_width}"
+                    assert launcher_y > 700, f"Mobile launcher should stay near the bottom-right, got y={launcher_y}"
+                    assert not teaser_visible, "Chatbot teaser should stay hidden on mobile."
+                    print("PASS mobile chatbot restraint")
+                    mobile.close()
 
                 except (AssertionError, PlaywrightTimeoutError):
                     page.screenshot(path=str(ARTIFACTS_DIR / "portfolio-smoke-failure.png"), full_page=True)

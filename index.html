@@ -60,8 +60,12 @@
         </div>
 
         <div class="nav-actions">
-          <a class="nav-link nav-link--cta" href="#contact">Hire Me</a>
+          <a class="nav-link nav-link--cta" href="#contact">
+            <span class="nav-link__text nav-link__text--full">Hire Me</span>
+            <span class="nav-link__text nav-link__text--short">Hire</span>
+          </a>
           <button class="theme-toggle" type="button" aria-label="Toggle color theme">
+            <span class="theme-toggle__halo" aria-hidden="true"></span>
             <span class="theme-toggle__icon" aria-hidden="true">&#9790;</span>
             <span class="theme-toggle__label">Dark</span>
           </button>
@@ -1015,37 +1019,52 @@
     </footer>
 
     <div class="chatbot-shell" aria-live="polite">
-      <div class="chatbot-teaser" id="chatbot-teaser">Hi! Ask me about Farhan's experience.</div>
+      <div class="chatbot-teaser" id="chatbot-teaser">
+        <span class="chatbot-teaser__kicker">AI Portfolio Guide</span>
+        <p>Ask about projects, skills, resume, or hiring details.</p>
+      </div>
       <button
         class="chatbot-launcher"
         id="chatbot-launcher"
         type="button"
         aria-expanded="false"
         aria-controls="chatbot-panel"
+        aria-label="Open Farhan's AI portfolio assistant"
       >
-        <span class="chatbot-launcher__icon" aria-hidden="true">&#128172;</span>
+        <span class="chatbot-launcher__icon" aria-hidden="true">AI</span>
         <span class="chatbot-launcher__dot" aria-hidden="true"></span>
         <span class="chatbot-launcher__copy">
-          <strong>Ask Farhan's Assistant</strong>
-          <small>Portfolio and experience Q&amp;A</small>
+          <strong>Ask the AI assistant</strong>
+          <small>Projects, fit, resume, and contact</small>
         </span>
       </button>
 
       <section class="chatbot-panel glass-card" id="chatbot-panel" aria-label="Portfolio chatbot">
         <header class="chatbot-panel__header">
           <div>
-            <span class="section-kicker">Portfolio Assistant</span>
-            <h2>Ask about Farhan's experience, projects, and contact details.</h2>
+            <span class="section-kicker">AI Portfolio Assistant</span>
+            <h2>Ask about Farhan's background, projects, skills, and hiring options.</h2>
             <div class="chatbot-status-row">
               <span class="chatbot-status-dot" aria-hidden="true"></span>
               <span id="chatbot-status">Ready to answer portfolio questions</span>
             </div>
             <p id="chatbot-meta">Loading site knowledge...</p>
           </div>
-          <button class="chatbot-close" id="chatbot-close" type="button" aria-label="Close chatbot">
-            Close
-          </button>
+          <div class="chatbot-panel__actions">
+            <button class="chatbot-secondary" id="chatbot-clear" type="button">
+              Clear
+            </button>
+            <button class="chatbot-close" id="chatbot-close" type="button" aria-label="Minimize chatbot">
+              Minimize
+            </button>
+          </div>
         </header>
+
+        <div
+          class="chatbot-prompt-groups"
+          id="chatbot-prompt-groups"
+          aria-label="Starter prompts"
+        ></div>
 
         <div class="chatbot-messages" id="chatbot-messages"></div>
 
@@ -1065,6 +1084,9 @@
           </label>
           <button class="button button--primary" type="submit">Ask</button>
         </form>
+        <p class="chatbot-helper">
+          AI-generated replies grounded only in this portfolio. It will not guess beyond the site data.
+        </p>
       </section>
     </div>
 

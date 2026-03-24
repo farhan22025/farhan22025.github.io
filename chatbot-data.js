@@ -1,6 +1,6 @@
 window.portfolioChatbotConfig = {
   assistantName: "Farhan Portfolio Assistant",
-  assistantStatus: "Ready for portfolio questions",
+  assistantStatus: "AI assistant ready",
   ownerName: "Farhan Alam",
   contactEmail: "alam22205341122@diu.edu.bd",
   secondaryEmail: "f05076963@gmail.com",
@@ -12,27 +12,49 @@ window.portfolioChatbotConfig = {
   whatsappUrl:
     "https://wa.me/8801610772313?text=Hi%20Farhan%2C%20I%20visited%20your%20portfolio%20and%20wanted%20to%20connect.",
   greeting:
-    "Hello. I am Farhan's portfolio assistant. I can answer questions about his experience, skills, projects, writings, education, and contact details.",
+    "Hello. I am the AI portfolio assistant for Farhan Alam. I can help you explore his background, strongest projects, skills, writings, resume, and contact options.",
   offTopicMessage:
     "I'm specifically trained to answer questions about Farhan Alam's portfolio and experience. For general questions, you might want to try a standard search. Want to see his resume instead?",
   unknownMessage:
-    "I'm not quite sure about that. The best way to get that answered is to email Farhan directly at alam22205341122@diu.edu.bd.",
+    "I'm not fully sure from the portfolio data alone. The safest next step is to check the resume or contact Farhan directly at alam22205341122@diu.edu.bd.",
   quickReplies: [
     {
-      label: "Download Resume",
-      message: "Can I view Farhan's resume?"
+      label: "About Farhan",
+      message: "Tell me about Farhan."
     },
     {
-      label: "View Projects",
-      message: "What projects has Farhan built?"
+      label: "Best Projects",
+      message: "Show me Farhan's best projects."
     },
     {
-      label: "Contact Info",
+      label: "Skills and Stack",
+      message: "What are Farhan's strongest skills?"
+    },
+    {
+      label: "Resume and Contact",
       message: "How can I contact Farhan?"
+    }
+  ],
+  starterPrompts: [
+    {
+      label: "Recruiter View",
+      description: "Fast summary of fit, proof of work, and resume path.",
+      message: "Give me a recruiter summary of Farhan."
     },
     {
-      label: "Top Skills",
-      message: "What are Farhan's main skills?"
+      label: "Best Projects",
+      description: "Show the strongest project evidence from this portfolio.",
+      message: "Show me Farhan's best projects."
+    },
+    {
+      label: "Skills and Stack",
+      description: "Summarize the main technologies and where they show up.",
+      message: "What are Farhan's strongest skills?"
+    },
+    {
+      label: "Hire and Contact",
+      description: "Find the resume, email, and next contact action quickly.",
+      message: "How can I contact Farhan?"
     }
   ],
   offTopicKeywords: [
@@ -113,7 +135,7 @@ window.portfolioChatbotConfig = {
       ],
       keywords: ["skills", "python", "java", "php", "c", "sql", "mysql", "oop", "system design"],
       answer:
-        "Farhan's portfolio highlights Python, Java, PHP, C, SQL, MySQL, OOP, data structures, system design, Git, and SQA testing, with a clear backend and data focus.",
+        "Farhan's portfolio highlights Python, Java, PHP, C, SQL, MySQL, OOP, data structures, system design, Git, and SQA testing, with a clear backend and data focus. Those strengths show up most clearly through the Coffee Shop, Banking, Smart Waste, and Deepfake projects.",
       links: [
         { label: "Open Skills", href: "#skills" },
         { label: "Open Projects", href: "#projects" }
@@ -134,7 +156,7 @@ window.portfolioChatbotConfig = {
       ],
       keywords: ["projects", "smart waste", "coffee shop", "banking", "deepfake"],
       answer:
-        "The featured work includes Smart Waste Management System, Coffee Shop Management System, Banking Management System, and the Deepfake Detection thesis project. Each card on the site now points to GitHub.",
+        "The featured work includes Smart Waste Management System, Coffee Shop Management System, Banking Management System, and the Deepfake Detection thesis project. Together they show system design, Java OOP, file handling in C, and research-oriented machine learning work.",
       links: [
         { label: "Open Projects", href: "#projects" },
         { label: "Open Writings", href: "#writings" }
@@ -278,7 +300,7 @@ window.portfolioChatbotConfig = {
       ],
       keywords: ["contact", "hire", "email", "phone", "whatsapp", "facebook"],
       answer:
-        "The best direct contact is alam22205341122@diu.edu.bd, with f05076963@gmail.com as the secondary email. The site also includes phone, WhatsApp, Facebook, resume, and GitHub links in the Hire Me section.",
+        "The best direct contact is alam22205341122@diu.edu.bd, with f05076963@gmail.com as the secondary email. The Hire Me section also includes phone, WhatsApp, Facebook, resume, GitHub, and site source links for quick follow-up.",
       links: [
         { label: "Open Hire Me", href: "#contact" },
         { label: "Open Resume", href: "assets/farhan-cv-resume.pdf" }

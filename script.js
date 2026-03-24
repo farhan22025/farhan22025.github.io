@@ -17,8 +17,11 @@ const mapFallbackNote = document.getElementById("map-fallback-note");
 
 const chatbotTeaser = document.getElementById("chatbot-teaser");
 const chatbotLauncher = document.getElementById("chatbot-launcher");
+const chatbotShell = document.querySelector(".chatbot-shell");
 const chatbotPanel = document.getElementById("chatbot-panel");
 const chatbotClose = document.getElementById("chatbot-close");
+const chatbotClear = document.getElementById("chatbot-clear");
+const chatbotPromptGroups = document.getElementById("chatbot-prompt-groups");
 const chatbotMessages = document.getElementById("chatbot-messages");
 const chatbotSuggestions = document.getElementById("chatbot-suggestions");
 const chatbotForm = document.getElementById("chatbot-form");
@@ -153,6 +156,33 @@ const chatbotFarewellPhrases = [
   "goodbye",
   "see you",
   "talk later"
+];
+
+const chatbotRecruiterTokens = [
+  "recruiter",
+  "hiring",
+  "manager",
+  "interview",
+  "interviewer",
+  "internship",
+  "role",
+  "position",
+  "qualified",
+  "suitable",
+  "match"
+];
+
+const chatbotClientTokens = [
+  "client",
+  "startup",
+  "founder",
+  "freelance",
+  "service",
+  "services",
+  "mvp",
+  "available",
+  "availability",
+  "hire"
 ];
 
 let typingPhraseIndex = 0;
@@ -309,6 +339,256 @@ function createIntentResponse(intentId) {
   );
 }
 
+function getChatbotStarterPrompts() {
+  const configPrompts = chatbotState.config?.starterPrompts;
+
+  if (Array.isArray(configPrompts) && configPrompts.length) {
+    return configPrompts;
+  }
+
+  return [
+    {
+      label: "Recruiter View",
+      description: "Fast summary of fit, work evidence, and resume path.",
+      message: "Give me a recruiter summary of Farhan."
+    },
+    {
+      label: "Best Projects",
+      description: "See the strongest work samples from the portfolio.",
+      message: "Show me Farhan's best projects."
+    },
+    {
+      label: "Skills and Stack",
+      description: "Connect the main technologies to real projects.",
+      message: "What are Farhan's strongest skills?"
+    },
+    {
+      label: "Hire and Contact",
+      description: "Open resume, email, and direct contact routes.",
+      message: "How can I contact Farhan?"
+    }
+  ];
+}
+
+function getProjectRecommendationResponse(queryNormalized, queryTokens) {
+  const links = getChatbotLinkSet();
+  const asksForProjectAdvice =
+    includesAnyToken(queryTokens, [
+      "best",
+      "strongest",
+      "relevant",
+      "recommend",
+      "proof",
+      "portfolio",
+      "frontend",
+      "backend",
+      "fullstack",
+      "full",
+      "stack",
+      "data",
+      "ai",
+      "ml",
+      "machine",
+      "learning",
+      "ecommerce",
+      "commerce",
+      "payment",
+      "dashboard",
+      "mvp",
+      "hardest",
+      "production"
+    ]) || includesPhrase(queryNormalized, "show me farhans best projects");
+
+  if (!asksForProjectAdvice) {
+    return null;
+  }
+
+  if (includesAnyToken(queryTokens, ["ai", "ml", "machine", "learning", "deepfake"])) {
+    return createChatbotResponse(
+      "For AI-leaning or research-oriented interest, the clearest match is Deepfake Detection. Based on the current portfolio, that is the strongest example of machine learning, experimentation, and thesis-level depth.",
+      [links.projects, links.writings, links.resume],
+      [
+        { label: "Deepfake Thesis", message: "Tell me about the deepfake thesis." },
+        { label: "Recruiter Summary", message: "Give me a recruiter summary of Farhan." },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "project-recommendation-ai"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["backend", "database", "api", "system", "sql"])) {
+    return createChatbotResponse(
+      "For backend or system-oriented evaluation, the strongest portfolio evidence is Smart Waste Management System, Banking Management System, and Coffee Shop Management System. Together they show system design, structured data thinking, Java OOP, and persistent record handling in C.",
+      [links.projects, links.skills, links.resume],
+      [
+        { label: "Backend Fit", message: "Which projects prove Farhan's backend skills?" },
+        { label: "Skills", message: "What are Farhan's strongest skills?" },
+        { label: "Contact", message: "How can I contact Farhan?" }
+      ],
+      "project-recommendation-backend"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["frontend", "react", "ui", "ux"])) {
+    return createChatbotResponse(
+      "Based on the current portfolio, Farhan's showcased work is stronger on backend, system design, and data-oriented thinking than on dedicated frontend case studies. The portfolio site itself is the most UI-forward example, while the academic projects lean more toward logic and system structure.",
+      [links.projects, links.about, links.hire],
+      [
+        { label: "Best Projects", message: "Show me Farhan's best projects." },
+        { label: "Recruiter Summary", message: "Give me a recruiter summary of Farhan." },
+        { label: "Contact", message: "How can I contact Farhan?" }
+      ],
+      "project-recommendation-frontend"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["ecommerce", "commerce", "payment", "mvp", "startup", "dashboard"])) {
+    return createChatbotResponse(
+      "The closest fit for transaction flow or small-business operations is Coffee Shop Management System, with Banking Management System as another useful proof point for record handling. The current portfolio does not list a dedicated e-commerce product, so that recommendation is the closest honest match.",
+      [links.projects, links.resume, links.hire],
+      [
+        { label: "Coffee Shop Project", message: "Tell me about the Coffee Shop Management System." },
+        { label: "Contact", message: "How can I contact Farhan?" },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "project-recommendation-client"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["hardest", "challenging"])) {
+    return createChatbotResponse(
+      "Based on the current portfolio, the most demanding project appears to be Deepfake Detection because it combines research, experimentation, and machine learning rather than a straightforward coursework implementation.",
+      [links.projects, links.writings],
+      [
+        { label: "Deepfake Thesis", message: "Tell me about the deepfake thesis." },
+        { label: "Best Projects", message: "Show me Farhan's best projects." },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "project-recommendation-hardest"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["production", "ready"])) {
+    return createChatbotResponse(
+      "The portfolio does not claim production deployment for the listed projects. Based on the descriptions alone, Coffee Shop Management System and Banking Management System read as the most operationally structured, but that should be treated as portfolio evidence rather than a production claim.",
+      [links.projects, links.resume],
+      [
+        { label: "Projects", message: "What projects has Farhan built?" },
+        { label: "Recruiter Summary", message: "Give me a recruiter summary of Farhan." },
+        { label: "Contact", message: "How can I contact Farhan?" }
+      ],
+      "project-recommendation-production"
+    );
+  }
+
+  if (includesAnyToken(queryTokens, ["best", "strongest", "recommend"])) {
+    return createChatbotResponse(
+      "If you want the strongest overall snapshot, start with Smart Waste Management System for system design, Coffee Shop Management System for Java OOP and operations flow, Banking Management System for C and file handling, and Deepfake Detection for research-oriented ML depth.",
+      [links.projects, links.resume, links.hire],
+      [
+        { label: "Backend Proof", message: "Which projects prove Farhan's backend skills?" },
+        { label: "Deepfake Thesis", message: "Tell me about the deepfake thesis." },
+        { label: "Contact", message: "How can I contact Farhan?" }
+      ],
+      "project-recommendation-general"
+    );
+  }
+
+  return null;
+}
+
+function getExperienceOrHiringResponse(queryNormalized, queryTokens) {
+  const links = getChatbotLinkSet();
+  const asksRecruiterMode =
+    includesAnyToken(queryTokens, chatbotRecruiterTokens) ||
+    includesPhrase(queryNormalized, "recruiter summary");
+  const asksClientMode =
+    includesAnyToken(queryTokens, chatbotClientTokens) ||
+    includesPhrase(queryNormalized, "freelance work");
+
+  if (
+    asksRecruiterMode ||
+    includesAnyToken(queryTokens, ["experience", "team", "teams", "internship", "job", "jobs"])
+  ) {
+    return createChatbotResponse(
+      "Based on the current portfolio, Farhan's strongest proof comes from academic projects, thesis work, club involvement, and collaborative technical activities rather than formal full-time industry roles. For recruiter review, the clearest path is to evaluate the projects, resume, education, and the way his work shows backend, system design, and data-oriented thinking.",
+      [links.projects, links.resume, links.education, links.hire],
+      [
+        { label: "Best Projects", message: "Show me Farhan's best projects." },
+        { label: "Backend Fit", message: "Which projects prove Farhan's backend skills?" },
+        { label: "Contact", message: "How can I contact Farhan?" }
+      ],
+      "experience-recruiter"
+    );
+  }
+
+  if (asksClientMode) {
+    return createChatbotResponse(
+      "Based on the portfolio, Farhan is open to serious hiring and collaboration conversations through the Hire Me section. The current site does not list a separate service menu or confirmed freelance schedule, so the best next step is to review the projects and contact him directly with the type of work you have in mind.",
+      [links.projects, links.resume, links.hire],
+      [
+        { label: "Best Projects", message: "Show me Farhan's best projects." },
+        { label: "Contact", message: "How can I contact Farhan?" },
+        { label: "Resume", message: "Can I see the resume?" }
+      ],
+      "experience-client"
+    );
+  }
+
+  return null;
+}
+
+function getRoleFitResponse(queryNormalized, queryTokens) {
+  const links = getChatbotLinkSet();
+
+  if (
+    includesPhrase(queryNormalized, "backend skills") ||
+    includesPhrase(queryNormalized, "backend role") ||
+    includesPhrase(queryNormalized, "full stack internship") ||
+    includesPhrase(queryNormalized, "full-stack internship") ||
+    includesPhrase(queryNormalized, "suitable for a frontend role")
+  ) {
+    if (includesAnyToken(queryTokens, ["backend"])) {
+      return createChatbotResponse(
+        "Yes, the portfolio supports Farhan most clearly for backend-leaning software engineering roles. The strongest evidence is Smart Waste for system structure, Banking for file-based logic in C, and Coffee Shop for Java OOP and operational flow.",
+        [links.projects, links.skills, links.resume],
+        [
+          { label: "Recruiter Summary", message: "Give me a recruiter summary of Farhan." },
+          { label: "Resume", message: "Can I see the resume?" },
+          { label: "Contact", message: "How can I contact Farhan?" }
+        ],
+        "role-fit-backend"
+      );
+    }
+
+    if (includesAnyToken(queryTokens, ["frontend"])) {
+      return createChatbotResponse(
+        "For a frontend-specific role, the current portfolio is less direct because most showcased work is stronger on backend logic, system design, and data-oriented structure. The site itself shows UI polish, but the listed project evidence leans more toward backend and engineering foundations.",
+        [links.projects, links.resume, links.hire],
+        [
+          { label: "Best Projects", message: "Show me Farhan's best projects." },
+          { label: "Recruiter Summary", message: "Give me a recruiter summary of Farhan." },
+          { label: "Contact", message: "How can I contact Farhan?" }
+        ],
+        "role-fit-frontend"
+      );
+    }
+
+    return createChatbotResponse(
+      "For a general software engineering or internship review, the portfolio shows the strongest fit through backend, system design, structured problem solving, and data-oriented coursework. The honest evaluation route is to review the projects first, then the resume and education details.",
+      [links.projects, links.resume, links.education],
+      [
+        { label: "Best Projects", message: "Show me Farhan's best projects." },
+        { label: "Skills", message: "What are Farhan's strongest skills?" },
+        { label: "Contact", message: "How can I contact Farhan?" }
+      ],
+      "role-fit-general"
+    );
+  }
+
+  return null;
+}
+
 function typeLoop() {
   if (!typingTarget) {
     return;
@@ -369,6 +649,7 @@ function updateThemeToggle(theme) {
     isDark ? "Switch to light theme" : "Switch to dark theme"
   );
   themeToggle.setAttribute("aria-pressed", String(!isDark));
+  themeToggle.dataset.theme = theme;
 }
 
 function setTheme(theme) {
@@ -672,7 +953,7 @@ function initForm() {
 function getDefaultChatbotConfig() {
   return {
     assistantName: "Farhan Portfolio Assistant",
-    assistantStatus: "Ready for portfolio questions",
+    assistantStatus: "AI assistant ready",
     ownerName: "Farhan Alam",
     contactEmail: "alam22205341122@diu.edu.bd",
     secondaryEmail: "f05076963@gmail.com",
@@ -684,15 +965,38 @@ function getDefaultChatbotConfig() {
     whatsappUrl:
       "https://wa.me/8801610772313?text=Hi%20Farhan%2C%20I%20visited%20your%20portfolio%20and%20wanted%20to%20connect.",
     greeting:
-      "Hello. I am Farhan's portfolio assistant. I can answer questions about his experience, skills, projects, education, and contact details.",
+      "Hello. I am the AI portfolio assistant for Farhan Alam. I can help you explore his background, strongest projects, skills, resume, and contact options.",
     offTopicMessage:
       "I'm specifically trained to answer questions about Farhan Alam's portfolio and experience. For general questions, you might want to try a standard search. Want to see his resume instead?",
     unknownMessage:
-      "I'm not quite sure about that. The best way to get that answered is to email Farhan directly at alam22205341122@diu.edu.bd.",
+      "I'm not fully sure from the portfolio data alone. The safest next step is to check the resume or contact Farhan directly at alam22205341122@diu.edu.bd.",
     quickReplies: [
-      { label: "Download Resume", message: "Can I view Farhan's resume?" },
-      { label: "View Projects", message: "What projects has Farhan built?" },
-      { label: "Contact Info", message: "How can I contact Farhan?" }
+      { label: "About Farhan", message: "Tell me about Farhan." },
+      { label: "Best Projects", message: "Show me Farhan's best projects." },
+      { label: "Skills and Stack", message: "What are Farhan's strongest skills?" },
+      { label: "Resume and Contact", message: "How can I contact Farhan?" }
+    ],
+    starterPrompts: [
+      {
+        label: "Recruiter View",
+        description: "Fast summary of fit, work evidence, and resume path.",
+        message: "Give me a recruiter summary of Farhan."
+      },
+      {
+        label: "Best Projects",
+        description: "See the strongest work samples from the portfolio.",
+        message: "Show me Farhan's best projects."
+      },
+      {
+        label: "Skills and Stack",
+        description: "Connect the main technologies to real projects.",
+        message: "What are Farhan's strongest skills?"
+      },
+      {
+        label: "Hire and Contact",
+        description: "Open resume, email, and direct contact routes.",
+        message: "How can I contact Farhan?"
+      }
     ],
     offTopicKeywords: ["politics", "weather", "history", "news", "sports"],
     codeKeywords: ["write code", "debug my code", "leetcode", "algorithm"],
@@ -753,7 +1057,7 @@ function scheduleTeaserHide() {
     window.clearTimeout(chatbotState.teaserTimer);
   }
 
-  chatbotState.teaserTimer = window.setTimeout(hideChatbotTeaser, 7000);
+  chatbotState.teaserTimer = window.setTimeout(hideChatbotTeaser, 5000);
 }
 
 function setChatbotOpen(isOpen) {
@@ -764,10 +1068,12 @@ function setChatbotOpen(isOpen) {
   chatbotState.open = isOpen;
   chatbotPanel.classList.toggle("is-open", isOpen);
   chatbotLauncher.setAttribute("aria-expanded", String(isOpen));
+  chatbotShell?.classList.toggle("is-engaged", isOpen || chatbotState.greeted);
 
   if (isOpen) {
     hideChatbotTeaser();
     seedChatbotConversation();
+    chatbotShell?.classList.add("is-engaged");
     window.setTimeout(() => {
       if (chatbotInput) {
         chatbotInput.focus();
@@ -814,7 +1120,7 @@ function createChatMessage(role, text, links = []) {
 
   const label = document.createElement("span");
   label.className = "chatbot-message__label";
-  label.textContent = role === "user" ? "You" : "Assistant";
+  label.textContent = role === "user" ? "You" : "AI Assistant";
   article.appendChild(label);
 
   String(text || "")
@@ -848,7 +1154,7 @@ function createTypingMessage() {
 
   const label = document.createElement("span");
   label.className = "chatbot-message__label";
-  label.textContent = "Assistant";
+  label.textContent = "AI Assistant";
   article.appendChild(label);
 
   const typing = document.createElement("div");
@@ -862,6 +1168,61 @@ function createTypingMessage() {
   chatbotMessages.appendChild(article);
   scrollChatToBottom();
   return article;
+}
+
+function runChatbotAction(item) {
+  if (!item) {
+    return;
+  }
+
+  setChatbotOpen(true);
+
+  if (item.href) {
+    if (item.href.startsWith("#")) {
+      setChatbotOpen(false);
+      navigateToHash(item.href);
+    } else {
+      window.open(item.href, "_blank", "noopener,noreferrer");
+    }
+    return;
+  }
+
+  if (chatbotInput && item.message) {
+    chatbotInput.value = item.message;
+  }
+
+  if (item.message) {
+    handleChatbotQuestion(item.message);
+  }
+}
+
+function renderPromptGroups() {
+  if (!chatbotPromptGroups) {
+    return;
+  }
+
+  chatbotPromptGroups.innerHTML = "";
+
+  getChatbotStarterPrompts().slice(0, 4).forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "chatbot-prompt-card";
+    button.innerHTML = `<strong>${item.label}</strong><small>${item.description || ""}</small>`;
+    button.addEventListener("click", () => runChatbotAction(item));
+    chatbotPromptGroups.appendChild(button);
+  });
+}
+
+function clearChatbotConversation() {
+  if (!chatbotMessages) {
+    return;
+  }
+
+  chatbotState.greeted = false;
+  chatbotState.lastIntent = null;
+  chatbotMessages.innerHTML = "";
+  renderQuickReplies(chatbotState.config?.quickReplies || []);
+  seedChatbotConversation();
 }
 
 function renderQuickReplies(replies) {
@@ -880,27 +1241,7 @@ function renderQuickReplies(replies) {
     button.type = "button";
     button.className = "chatbot-suggestion";
     button.textContent = item.label;
-    button.addEventListener("click", () => {
-      setChatbotOpen(true);
-
-      if (item.href) {
-        if (item.href.startsWith("#")) {
-          setChatbotOpen(false);
-          navigateToHash(item.href);
-        } else {
-          window.open(item.href, "_blank", "noopener,noreferrer");
-        }
-        return;
-      }
-
-      if (chatbotInput && item.message) {
-        chatbotInput.value = item.message;
-      }
-
-      if (item.message) {
-        handleChatbotQuestion(item.message);
-      }
-    });
+    button.addEventListener("click", () => runChatbotAction(item));
     chatbotSuggestions.appendChild(button);
   });
 }
@@ -919,6 +1260,7 @@ function seedChatbotConversation() {
   ]);
   renderQuickReplies(chatbotState.config.quickReplies);
   chatbotState.greeted = true;
+  chatbotShell?.classList.add("is-engaged");
 }
 
 function includesConfiguredPhrase(query, phrases) {
@@ -1057,6 +1399,21 @@ function resolveRuleBasedChatbotResponse(queryNormalized, queryTokens) {
   const secondaryEmail = config.secondaryEmail || "";
   const phone = config.phone || "+8801610772313";
   const links = getChatbotLinkSet();
+  const projectRecommendation = getProjectRecommendationResponse(queryNormalized, queryTokens);
+  const experienceOrHiring = getExperienceOrHiringResponse(queryNormalized, queryTokens);
+  const roleFitResponse = getRoleFitResponse(queryNormalized, queryTokens);
+
+  if (projectRecommendation) {
+    return projectRecommendation;
+  }
+
+  if (roleFitResponse) {
+    return roleFitResponse;
+  }
+
+  if (experienceOrHiring) {
+    return experienceOrHiring;
+  }
 
   if (includesAnyToken(queryTokens, ["email"])) {
     return createChatbotResponse(
@@ -1320,10 +1677,12 @@ function initChatbot() {
   chatbotState.config = prepareChatbotConfig();
 
   if (chatbotMeta) {
-    chatbotMeta.textContent = "Portfolio-only assistant with professional scope and direct contact fallback.";
+    chatbotMeta.textContent =
+      "AI assistant grounded only in this portfolio. It helps with projects, fit, resume, and contact without inventing details.";
   }
 
   setChatbotStatus(chatbotState.config.assistantStatus);
+  renderPromptGroups();
   renderQuickReplies(chatbotState.config.quickReplies);
 
   if (chatbotState.initialized) {
@@ -1341,6 +1700,10 @@ function initChatbot() {
 
   if (chatbotClose) {
     chatbotClose.addEventListener("click", () => setChatbotOpen(false));
+  }
+
+  if (chatbotClear) {
+    chatbotClear.addEventListener("click", () => clearChatbotConversation());
   }
 
   chatbotForm.addEventListener("submit", (event) => {
@@ -1388,7 +1751,9 @@ document.addEventListener("DOMContentLoaded", () => {
     themeToggle.addEventListener("click", () => {
       const nextTheme =
         document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      themeToggle.classList.add("is-switching");
       setTheme(nextTheme);
+      window.setTimeout(() => themeToggle.classList.remove("is-switching"), 420);
     });
   }
 
