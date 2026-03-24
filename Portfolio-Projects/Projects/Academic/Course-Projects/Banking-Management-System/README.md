@@ -1,16 +1,23 @@
 # Banking Management System
 
-## Overview
+## About
 
-This C-based project simulates core banking workflows using file handling for persistent storage.
+This is an academic C project focused on simulating core banking operations through structured program flow and file-based record handling.
 
-## Key Areas
+## Instructions on how to run this program
 
-- C programming
-- File handling
-- Persistent records
-- Logic-driven command flow
+1. This folder currently contains project documentation only.
+2. If the C source files are added later, open a terminal in this folder.
+3. Compile the program with a C compiler such as GCC.
+4. Run the generated executable from the terminal.
 
-## Farhan's Contribution
+Example command flow when source files are available:
 
-Farhan implemented structured account operations with a focus on reliability, continuity, and clear processing flow.
+```bash
+gcc main.c -o banking-system
+./banking-system
+```
+
+## Objective
+
+The objective of this project is to practice C programming, file handling, and building reliable logic for common banking tasks such as managing records and processing account operations.

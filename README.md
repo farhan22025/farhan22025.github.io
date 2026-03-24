@@ -1,49 +1,31 @@
-# Farhan Alam's Portfolio
+# Farhan Alam Repository
 
-A modern, minimal, and fully responsive personal portfolio website built with plain HTML, CSS, and JavaScript for easy GitHub Pages deployment.
+## About
 
-Link to my Live Portfolio Site
+This repository contains Farhan Alam's live portfolio website, supporting frontend prototypes, a small Python game project, and a structured workspace for academic and personal software engineering work.
 
---> https://farhan22025.github.io/ <--
+Live portfolio:
 
-## Folder Structure
+[https://farhan22025.github.io/](https://farhan22025.github.io/)
 
-```text
-E:\Project_portfolio11
-|-- assets
-|   |-- favicon.svg
-|   `-- farhan-cv-resume.pdf
-|-- chatbot-data.js
-|-- index.html
-|-- Portfolio-Projects
-|   `-- README.md
-|-- Prompt to Codex.txt
-|-- styles.css
-|-- script.js
-`-- README.md
-```
+Main contents of this repository:
 
-## Features
+- `index.html`, `styles.css`, `script.js`, and `chatbot-data.js` for the live portfolio site
+- `assets/` for portfolio media and the hosted resume PDF
+- `Farhans_Portfolio_PrototypeV1/` for an earlier portfolio prototype
+- `Recipe_Share/` for a recipe-sharing HTML project
+- `Tictaoe/` for a Python Tkinter tic-tac-toe project
+- `Portfolio-Projects/` for organized academic, personal, and data engineering project documentation
 
-- Responsive single-page layout
-- Modern teal/cyan data-dashboard inspired design
-- Sticky navigation with active section tracking
-- Typing animation in the hero section
-- Scroll reveal animations
-- Animated skill bars
-- Dark/light mode toggle with saved preference
-- Interactive Leaflet map with Dhaka and DIU Ashulia markers
-- In-site chatbot with a curated portfolio question bank
-- Direct resume, Facebook, and WhatsApp contact buttons
-- Frontend-only contact form
+## Instructions on how to run this program
 
-## Run Locally
+To run the main portfolio website locally:
 
-1. Open the project folder.
-2. Double-click `index.html` or serve the folder with a simple local server.
-3. Make sure you have an internet connection so the Google Fonts and Leaflet CDN assets can load.
+1. Open this folder on your computer.
+2. Open `index.html` in a browser, or start a small local server from this directory.
+3. Keep an internet connection available so external fonts and map assets can load correctly.
 
-If you want to run it with a local server using Python:
+Example local server command:
 
 ```bash
 python -m http.server 5500
@@ -51,34 +33,17 @@ python -m http.server 5500
 
 Then visit `http://localhost:5500`.
 
-## Deploy To GitHub Pages
+To deploy the portfolio on GitHub Pages:
 
-1. Create a new GitHub repository.
-2. Upload the files from this project folder.
-3. Commit and push to the repository's default branch.
-4. In GitHub, open `Settings` > `Pages`.
-5. Under `Build and deployment`, choose `Deploy from a branch`.
-6. Select your default branch and the `/ (root)` folder.
-7. Save the settings and wait for GitHub Pages to publish the site.
+1. Push this repository to GitHub.
+2. Open the repository settings.
+3. Go to `Pages`.
+4. Set the source to `Deploy from a branch`.
+5. Select `main` and `/ (root)`.
+6. Save and wait for the site to publish.
 
-## Customize Before Publishing
+Each extra project folder in this repository includes its own `README.md` with project-specific run instructions.
 
-- Replace the placeholder GitHub link in `index.html`.
-- Replace the placeholder LinkedIn link in `index.html`.
-- Update any wording, skill percentages, or project details as needed.
-- If you want different map markers, edit the coordinates in `script.js`.
-- To expand the chatbot's answers, add or edit entries in `chatbot-data.js`.
-- The real learning workspace now lives under `Portfolio-Projects/`; add files there as you build out each track.
+## Objective
 
-## Tech Stack
-
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Leaflet.js
-
-## Chatbot Notes
-
-- The chatbot is fully client-side and does not use a backend or external AI API.
-- It works by preprocessing the seeded question bank in `chatbot-data.js` and matching visitor questions to the closest portfolio topic.
-- It is fast and private, but limited to the information currently included in the site data.
+The objective of this repository is to present Farhan Alam's professional portfolio in a clean and accessible way, while also keeping supporting projects, documentation, and learning work organized in one GitHub-ready place.

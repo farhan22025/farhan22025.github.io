@@ -1,16 +1,23 @@
 # Coffee Shop Management System
 
-## Overview
+## About
 
-This Java project is a POS-style management system for handling shop transactions and day-to-day operations.
+This is a Java academic project designed as a coffee shop management system with a point-of-sale style workflow and object-oriented program structure.
 
-## Key Areas
+## Instructions on how to run this program
 
-- Java programming
-- OOP design
-- Transaction flow
-- Organized operational logic
+1. This folder currently contains project documentation only.
+2. When the Java source files are available, open a terminal in this folder.
+3. Compile the source files with `javac`.
+4. Run the main class with `java`.
 
-## Farhan's Contribution
+Example command flow when source files are available:
 
-Farhan applied object-oriented design principles to keep the system modular, readable, and consistent.
+```bash
+javac *.java
+java Main
+```
+
+## Objective
+
+The objective of this project is to strengthen Java programming, apply OOP concepts, and model the operational flow of a small coffee shop system in a structured way.

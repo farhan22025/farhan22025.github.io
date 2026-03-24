@@ -1,16 +1,17 @@
 # Portfolio-Projects Workspace
 
-This folder is a structured workspace for Farhan Alam's learning roadmap, project organization, and future data engineering build-out.
+## About
 
-## Purpose
+This folder is a structured workspace for Farhan Alam's academic projects, personal experiments, data engineering practice, datasets, notes, and roadmap-based learning materials.
 
-- Keep academic, personal, and collaborative work organized
-- Separate skill practice by language and topic
-- Prepare space for ETL, data cleaning, wrangling, and modeling work
-- Store raw and processed datasets cleanly
-- Maintain notes, cheatsheets, and roadmap resources in one place
+## Instructions on how to run this program
 
-## Notes
+1. Open the folder that matches the area you want to review, such as `Projects`, `Skills-Practice`, `Data-Engineering`, or `Resources`.
+2. Read the project-specific `README.md` files where available.
+3. Add source code, datasets, notes, or documentation to the appropriate subfolder as the workspace grows.
 
-- The folders are intentionally created as a clean scaffold and can now be filled with projects, practice files, datasets, and notes over time.
-- The progress bars shown on the portfolio site represent roadmap and workspace build progress, not final mastery in every category.
+This workspace is mainly organizational, so some folders are documentation-first and may not yet contain runnable code.
+
+## Objective
+
+The objective of this workspace is to keep Farhan's project portfolio organized, make future uploads easier, and separate practice, documentation, and real project work in a clean GitHub-friendly structure.
