@@ -31,7 +31,7 @@ CHATBOT_CASES = [
     ("What is his phone number?", ["+8801610772313", "whatsapp"]),
     ("Can I see the resume?", ["resume", "pdf"]),
     ("Where is he based?", ["dhaka", "ashulia"]),
-    ("Give me a recruiter summary of Farhan.", ["projects", "resume", "formal"]),
+    ("Give me a recruiter summary of Farhan.", ["projects", "resume", "backend"]),
     ("Which projects prove Farhan's backend skills?", ["smart waste", "banking", "coffee shop"]),
     ("Is he available for freelance work?", ["hire me", "projects", "contact"]),
     ("Can you write code for me?", ["specifically trained", "portfolio"]),
@@ -69,7 +69,7 @@ def assert_contains(actual_text: str, expected_snippets: list[str], label: str) 
         raise AssertionError(f"{label} is missing expected text: {missing}\nActual: {actual_text}")
 
 
-def ask_chatbot(page, question: str) -> str:
+def ask_chatbot(page, question: str):
     bot_messages = page.locator(".chatbot-message--bot")
     previous_count = bot_messages.count()
     page.locator("#chatbot-input").fill(question)
@@ -83,7 +83,7 @@ def ask_chatbot(page, question: str) -> str:
         arg=previous_count + 1,
         timeout=8000,
     )
-    return bot_messages.nth(bot_messages.count() - 1).inner_text().strip()
+    return bot_messages.nth(bot_messages.count() - 1)
 
 
 def run() -> int:
@@ -109,6 +109,12 @@ def run() -> int:
                     title = page.title()
                     assert "Farhan Alam" in title, f"Unexpected page title: {title}"
                     print(f"PASS title: {title}")
+
+                    brand_src = page.locator(".brand-avatar").get_attribute("src")
+                    assert brand_src and "farhan-profile.png" in brand_src, (
+                        f"Brand avatar is missing the real profile photo: {brand_src}"
+                    )
+                    print("PASS brand avatar uses profile photo")
 
                     cta_before = page.locator(".nav-link--cta").evaluate(
                         "el => getComputedStyle(el).transform"
@@ -158,6 +164,46 @@ def run() -> int:
                     assert "ai portfolio assistant" in greeting.lower(), "Chatbot greeting did not render."
                     print("PASS chatbot panel open")
 
+                    launcher_avatar_count = page.locator(".chatbot-launcher__avatar").count()
+                    assert launcher_avatar_count == 2, (
+                        f"Expected 2 launcher avatars, found {launcher_avatar_count}"
+                    )
+                    print("PASS chatbot launcher avatars")
+
+                    prompt_groups_fit = page.locator("#chatbot-prompt-groups").evaluate(
+                        "el => el.scrollWidth <= el.clientWidth + 1"
+                    )
+                    assert prompt_groups_fit, "Starter prompt cards are overflowing horizontally."
+                    print("PASS chatbot prompt layout")
+
+                    scale_before = page.locator(".chatbot-shell").get_attribute("data-chat-scale")
+                    panel_width_before = page.locator("#chatbot-panel").bounding_box()["width"]
+                    page.locator("#chatbot-scale-up").click()
+                    page.wait_for_timeout(220)
+                    scale_after_up = page.locator(".chatbot-shell").get_attribute("data-chat-scale")
+                    panel_width_after_up = page.locator("#chatbot-panel").bounding_box()["width"]
+                    assert scale_after_up == "comfortable", (
+                        f"Expected comfortable scale after A+, got {scale_after_up}"
+                    )
+                    assert panel_width_after_up > panel_width_before + 5, (
+                        "Chatbot panel did not grow after pressing A+."
+                    )
+                    page.locator("#chatbot-scale-down").click()
+                    page.locator("#chatbot-scale-down").click()
+                    page.wait_for_timeout(220)
+                    scale_after_down = page.locator(".chatbot-shell").get_attribute("data-chat-scale")
+                    panel_width_after_down = page.locator("#chatbot-panel").bounding_box()["width"]
+                    assert scale_before == "default", f"Unexpected starting chat scale: {scale_before}"
+                    assert scale_after_down == "compact", (
+                        f"Expected compact scale after A- twice, got {scale_after_down}"
+                    )
+                    assert panel_width_after_down < panel_width_before - 5, (
+                        "Chatbot panel did not shrink after pressing A-."
+                    )
+                    page.locator("#chatbot-scale-up").click()
+                    page.wait_for_timeout(220)
+                    print("PASS chatbot scaling controls")
+
                     page.locator("#chatbot-clear").click()
                     page.wait_for_timeout(350)
                     message_count_after_clear = page.locator(".chatbot-message--bot").count()
@@ -165,9 +211,28 @@ def run() -> int:
                     print("PASS chatbot clear action")
 
                     for question, expected_snippets in CHATBOT_CASES:
-                        reply = ask_chatbot(page, question)
+                        reply_locator = ask_chatbot(page, question)
+                        reply = reply_locator.inner_text().strip()
                         assert_contains(reply, expected_snippets, f"Chatbot reply for '{question}'")
                         print(f"PASS chatbot: {question}")
+
+                    showcase_reply = ask_chatbot(page, "Show me Farhan's best projects.")
+                    showcase_avatar = showcase_reply.locator(".chatbot-message__avatar").get_attribute(
+                        "src"
+                    )
+                    assert showcase_avatar and "chatbot-avatar-showcase" in showcase_avatar, (
+                        f"Expected showcase avatar for project highlights, got {showcase_avatar}"
+                    )
+                    print("PASS chatbot showcase persona")
+
+                    formal_reply = ask_chatbot(page, "What email should I use?")
+                    formal_avatar = formal_reply.locator(".chatbot-message__avatar").get_attribute(
+                        "src"
+                    )
+                    assert formal_avatar and "chatbot-avatar-formal" in formal_avatar, (
+                        f"Expected formal avatar for contact guidance, got {formal_avatar}"
+                    )
+                    print("PASS chatbot formal persona")
 
                     mobile = browser.new_page(viewport={"width": 390, "height": 844})
                     mobile.goto(f"http://127.0.0.1:{port}/", wait_until="networkidle", timeout=120000)

@@ -1,6 +1,20 @@
 window.portfolioChatbotConfig = {
   assistantName: "Farhan Portfolio Assistant",
   assistantStatus: "AI assistant ready",
+  assistantPersonas: {
+    formal: {
+      id: "formal",
+      name: "Portfolio Guide",
+      role: "AI formal mode",
+      avatar: "assets/chatbot-avatar-formal.jpg"
+    },
+    showcase: {
+      id: "showcase",
+      name: "Spotlight Guide",
+      role: "AI project highlights",
+      avatar: "assets/chatbot-avatar-showcase.jpg"
+    }
+  },
   ownerName: "Farhan Alam",
   contactEmail: "alam22205341122@diu.edu.bd",
   secondaryEmail: "f05076963@gmail.com",

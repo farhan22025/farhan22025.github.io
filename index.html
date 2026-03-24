@@ -41,7 +41,9 @@
     <header class="site-header">
       <nav class="nav container">
         <a class="brand" href="#home" aria-label="Farhan Alam home">
-          <span class="brand-mark">FA</span>
+          <span class="brand-mark">
+            <img class="brand-avatar" src="assets/farhan-profile.png" alt="" />
+          </span>
           <span class="brand-copy">
             <strong>Farhan Alam</strong>
           </span>
@@ -135,6 +137,19 @@
 
           <div class="hero-visual reveal">
             <div class="glass-card dashboard-card">
+              <div class="profile-spotlight">
+                <img
+                  class="profile-spotlight__image"
+                  src="assets/farhan-profile.png"
+                  alt="Portrait of Farhan Alam"
+                />
+                <div class="profile-spotlight__copy">
+                  <span class="insight-label">Profile</span>
+                  <strong>Farhan Alam</strong>
+                  <small>Software Engineer focused on backend systems and data-driven growth.</small>
+                </div>
+              </div>
+
               <div class="dashboard-card__head">
                 <div>
                   <h2>Career Snapshot</h2>
@@ -1018,7 +1033,7 @@
       </div>
     </footer>
 
-    <div class="chatbot-shell" aria-live="polite">
+    <div class="chatbot-shell" aria-live="polite" data-chat-scale="default">
       <div class="chatbot-teaser" id="chatbot-teaser">
         <span class="chatbot-teaser__kicker">AI Portfolio Guide</span>
         <p>Ask about projects, skills, resume, or hiring details.</p>
@@ -1031,7 +1046,18 @@
         aria-controls="chatbot-panel"
         aria-label="Open Farhan's AI portfolio assistant"
       >
-        <span class="chatbot-launcher__icon" aria-hidden="true">AI</span>
+        <span class="chatbot-launcher__icon" aria-hidden="true">
+          <img
+            class="chatbot-launcher__avatar chatbot-launcher__avatar--showcase"
+            src="assets/chatbot-avatar-showcase.jpg"
+            alt=""
+          />
+          <img
+            class="chatbot-launcher__avatar chatbot-launcher__avatar--formal"
+            src="assets/chatbot-avatar-formal.jpg"
+            alt=""
+          />
+        </span>
         <span class="chatbot-launcher__dot" aria-hidden="true"></span>
         <span class="chatbot-launcher__copy">
           <strong>Ask the AI assistant</strong>
@@ -1051,6 +1077,12 @@
             <p id="chatbot-meta">Loading site knowledge...</p>
           </div>
           <div class="chatbot-panel__actions">
+            <button class="chatbot-secondary" id="chatbot-scale-down" type="button" aria-label="Reduce chatbot size">
+              A-
+            </button>
+            <button class="chatbot-secondary" id="chatbot-scale-up" type="button" aria-label="Increase chatbot size">
+              A+
+            </button>
             <button class="chatbot-secondary" id="chatbot-clear" type="button">
               Clear
             </button>

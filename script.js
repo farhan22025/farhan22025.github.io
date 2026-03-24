@@ -21,6 +21,8 @@ const chatbotShell = document.querySelector(".chatbot-shell");
 const chatbotPanel = document.getElementById("chatbot-panel");
 const chatbotClose = document.getElementById("chatbot-close");
 const chatbotClear = document.getElementById("chatbot-clear");
+const chatbotScaleDown = document.getElementById("chatbot-scale-down");
+const chatbotScaleUp = document.getElementById("chatbot-scale-up");
 const chatbotPromptGroups = document.getElementById("chatbot-prompt-groups");
 const chatbotMessages = document.getElementById("chatbot-messages");
 const chatbotSuggestions = document.getElementById("chatbot-suggestions");
@@ -185,6 +187,8 @@ const chatbotClientTokens = [
   "hire"
 ];
 
+const chatbotScaleSteps = ["compact", "default", "comfortable"];
+
 let typingPhraseIndex = 0;
 let typingCharacterIndex = 0;
 let typingDeleting = false;
@@ -203,6 +207,7 @@ const chatbotState = {
   initialized: false,
   greeted: false,
   open: false,
+  scale: "default",
   lastIntent: null,
   typingTimer: null,
   teaserTimer: null
@@ -310,6 +315,101 @@ function getChatbotLinkSet() {
     facebook: { label: "Open Facebook", href: facebookUrl },
     whatsapp: { label: "Open WhatsApp", href: whatsappUrl }
   };
+}
+
+function getChatbotAssistantPersonas() {
+  const configuredPersonas = chatbotState.config?.assistantPersonas || {};
+
+  return {
+    formal: {
+      id: "formal",
+      name: "Portfolio Guide",
+      role: "AI formal mode",
+      avatar: "assets/chatbot-avatar-formal.jpg",
+      ...(configuredPersonas.formal || {})
+    },
+    showcase: {
+      id: "showcase",
+      name: "Spotlight Guide",
+      role: "AI project highlights",
+      avatar: "assets/chatbot-avatar-showcase.jpg",
+      ...(configuredPersonas.showcase || {})
+    }
+  };
+}
+
+function getAssistantPersona(intentId = "") {
+  const personas = getChatbotAssistantPersonas();
+  const normalizedIntentId = String(intentId || "").trim().toLowerCase();
+  const showcasePrefixes = [
+    "about",
+    "skills",
+    "projects",
+    "smart-waste",
+    "coffee-shop",
+    "banking",
+    "deepfake",
+    "writings",
+    "activities",
+    "site",
+    "github",
+    "project-recommendation",
+    "role-fit-backend",
+    "role-fit-general",
+    "experience-recruiter"
+  ];
+
+  if (showcasePrefixes.some((prefix) => normalizedIntentId.startsWith(prefix))) {
+    return personas.showcase;
+  }
+
+  return personas.formal;
+}
+
+function updateChatbotScaleButtons() {
+  const currentIndex = chatbotScaleSteps.indexOf(chatbotState.scale);
+  const safeIndex = currentIndex === -1 ? 1 : currentIndex;
+  const currentLabel = chatbotScaleSteps[safeIndex];
+
+  if (chatbotScaleDown) {
+    chatbotScaleDown.title =
+      safeIndex === 0 ? "Chat is already at compact size" : "Make the chat panel smaller";
+    chatbotScaleDown.setAttribute(
+      "aria-label",
+      `Reduce chatbot size. Current size is ${currentLabel}.`
+    );
+  }
+
+  if (chatbotScaleUp) {
+    chatbotScaleUp.title =
+      safeIndex === chatbotScaleSteps.length - 1
+        ? "Chat is already at the largest size"
+        : "Make the chat panel larger";
+    chatbotScaleUp.setAttribute(
+      "aria-label",
+      `Increase chatbot size. Current size is ${currentLabel}.`
+    );
+  }
+}
+
+function setChatbotScale(scale) {
+  if (!chatbotShell) {
+    return;
+  }
+
+  const nextScale = chatbotScaleSteps.includes(scale) ? scale : "default";
+  chatbotState.scale = nextScale;
+  chatbotShell.dataset.chatScale = nextScale;
+  localStorage.setItem("farhan-chatbot-scale", nextScale);
+  updateChatbotScaleButtons();
+  scrollChatToBottom();
+}
+
+function shiftChatbotScale(direction) {
+  const currentIndex = chatbotScaleSteps.indexOf(chatbotState.scale);
+  const safeIndex = currentIndex === -1 ? 1 : currentIndex;
+  const nextIndex = Math.max(0, Math.min(chatbotScaleSteps.length - 1, safeIndex + direction));
+  setChatbotScale(chatbotScaleSteps[nextIndex]);
 }
 
 function createChatbotResponse(answer, links = [], quickReplies = null, intentId = null) {
@@ -954,6 +1054,20 @@ function getDefaultChatbotConfig() {
   return {
     assistantName: "Farhan Portfolio Assistant",
     assistantStatus: "AI assistant ready",
+    assistantPersonas: {
+      formal: {
+        id: "formal",
+        name: "Portfolio Guide",
+        role: "AI formal mode",
+        avatar: "assets/chatbot-avatar-formal.jpg"
+      },
+      showcase: {
+        id: "showcase",
+        name: "Spotlight Guide",
+        role: "AI project highlights",
+        avatar: "assets/chatbot-avatar-showcase.jpg"
+      }
+    },
     ownerName: "Farhan Alam",
     contactEmail: "alam22205341122@diu.edu.bd",
     secondaryEmail: "f05076963@gmail.com",
@@ -1015,17 +1129,22 @@ function getDefaultChatbotConfig() {
 }
 
 function prepareChatbotConfig() {
+  const defaults = getDefaultChatbotConfig();
   const baseConfig =
     window.portfolioChatbotConfig && typeof window.portfolioChatbotConfig === "object"
       ? window.portfolioChatbotConfig
-      : getDefaultChatbotConfig();
+      : defaults;
 
   return {
-    ...getDefaultChatbotConfig(),
+    ...defaults,
     ...baseConfig,
+    assistantPersonas: {
+      ...defaults.assistantPersonas,
+      ...(baseConfig.assistantPersonas || {})
+    },
     quickReplies: Array.isArray(baseConfig.quickReplies)
       ? baseConfig.quickReplies
-      : getDefaultChatbotConfig().quickReplies,
+      : defaults.quickReplies,
     intents: (Array.isArray(baseConfig.intents) ? baseConfig.intents : []).map((intent) => ({
       ...intent,
       normalizedPhrases: uniqueValues((intent.phrases || []).map(normalizeText)),
@@ -1110,18 +1229,55 @@ function createChatLink(link) {
   return anchor;
 }
 
-function createChatMessage(role, text, links = []) {
+function createChatIdentity(role, intentId = null) {
+  if (role === "user") {
+    const label = document.createElement("span");
+    label.className = "chatbot-message__label";
+    label.textContent = "You";
+    return label;
+  }
+
+  const persona = getAssistantPersona(intentId);
+  const identityHead = document.createElement("div");
+  identityHead.className = "chatbot-message__head";
+
+  const avatar = document.createElement("img");
+  avatar.className = "chatbot-message__avatar";
+  avatar.src = persona.avatar;
+  avatar.alt = "";
+  identityHead.appendChild(avatar);
+
+  const identity = document.createElement("div");
+  identity.className = "chatbot-message__identity";
+
+  const name = document.createElement("span");
+  name.className = "chatbot-message__label";
+  name.textContent = persona.name;
+  identity.appendChild(name);
+
+  const roleLine = document.createElement("span");
+  roleLine.className = "chatbot-message__role";
+  roleLine.textContent = persona.role;
+  identity.appendChild(roleLine);
+
+  identityHead.appendChild(identity);
+  return identityHead;
+}
+
+function createChatMessage(role, text, links = [], options = {}) {
   if (!chatbotMessages) {
     return null;
   }
 
   const article = document.createElement("article");
   article.className = `chatbot-message chatbot-message--${role}`;
+  const intentId = options.intentId || null;
 
-  const label = document.createElement("span");
-  label.className = "chatbot-message__label";
-  label.textContent = role === "user" ? "You" : "AI Assistant";
-  article.appendChild(label);
+  if (role === "bot") {
+    article.dataset.assistantPersona = getAssistantPersona(intentId).id;
+  }
+
+  article.appendChild(createChatIdentity(role, intentId));
 
   String(text || "")
     .split(/\n+/)
@@ -1144,18 +1300,15 @@ function createChatMessage(role, text, links = []) {
   return article;
 }
 
-function createTypingMessage() {
+function createTypingMessage(intentId = null) {
   if (!chatbotMessages) {
     return null;
   }
 
   const article = document.createElement("article");
   article.className = "chatbot-message chatbot-message--bot chatbot-message--typing";
-
-  const label = document.createElement("span");
-  label.className = "chatbot-message__label";
-  label.textContent = "AI Assistant";
-  article.appendChild(label);
+  article.dataset.assistantPersona = getAssistantPersona(intentId).id;
+  article.appendChild(createChatIdentity("bot", intentId));
 
   const typing = document.createElement("div");
   typing.className = "chatbot-typing";
@@ -1257,7 +1410,9 @@ function seedChatbotConversation() {
     links.projects,
     links.resume,
     links.hire
-  ]);
+  ], {
+    intentId: "greeting"
+  });
   renderQuickReplies(chatbotState.config.quickReplies);
   chatbotState.greeted = true;
   chatbotShell?.classList.add("is-engaged");
@@ -1630,7 +1785,9 @@ function handleChatbotQuestion(rawQuestion) {
   if (!question) {
     const response = resolveChatbotResponse("");
     renderQuickReplies(response.quickReplies);
-    createChatMessage("bot", response.answer, response.links);
+    createChatMessage("bot", response.answer, response.links, {
+      intentId: response.intentId
+    });
     return;
   }
 
@@ -1642,15 +1799,17 @@ function handleChatbotQuestion(rawQuestion) {
   createChatMessage("user", question);
   setChatbotStatus("Thinking...");
 
-  const typingMessage = createTypingMessage();
   const response = resolveChatbotResponse(question);
+  const typingMessage = createTypingMessage(response.intentId);
 
   chatbotState.typingTimer = window.setTimeout(() => {
     if (typingMessage) {
       typingMessage.remove();
     }
 
-    createChatMessage("bot", response.answer, response.links);
+    createChatMessage("bot", response.answer, response.links, {
+      intentId: response.intentId
+    });
     renderQuickReplies(response.quickReplies);
     chatbotState.lastIntent = response.intentId || null;
     setChatbotStatus(chatbotState.config.assistantStatus);
@@ -1675,6 +1834,7 @@ function initChatbot() {
   }
 
   chatbotState.config = prepareChatbotConfig();
+  setChatbotScale(localStorage.getItem("farhan-chatbot-scale") || chatbotShell?.dataset.chatScale || "default");
 
   if (chatbotMeta) {
     chatbotMeta.textContent =
@@ -1704,6 +1864,14 @@ function initChatbot() {
 
   if (chatbotClear) {
     chatbotClear.addEventListener("click", () => clearChatbotConversation());
+  }
+
+  if (chatbotScaleDown) {
+    chatbotScaleDown.addEventListener("click", () => shiftChatbotScale(-1));
+  }
+
+  if (chatbotScaleUp) {
+    chatbotScaleUp.addEventListener("click", () => shiftChatbotScale(1));
   }
 
   chatbotForm.addEventListener("submit", (event) => {
