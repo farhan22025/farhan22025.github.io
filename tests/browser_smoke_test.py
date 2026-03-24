@@ -102,6 +102,11 @@ def run() -> int:
                     executable_path=str(browser_path),
                 )
                 page = browser.new_page(viewport={"width": 1440, "height": 1200})
+                page.add_init_script(
+                    """() => {
+                        localStorage.removeItem('farhan-chatbot-scale');
+                    }"""
+                )
 
                 try:
                     page.goto(f"http://127.0.0.1:{port}/", wait_until="networkidle", timeout=120000)
@@ -209,6 +214,36 @@ def run() -> int:
                     message_count_after_clear = page.locator(".chatbot-message--bot").count()
                     assert message_count_after_clear >= 1, "Chatbot clear did not reseed the greeting."
                     print("PASS chatbot clear action")
+
+                    prompt_count_before = page.locator(".chatbot-message--bot").count()
+                    page.locator(".chatbot-prompt-card").first.click()
+                    page.wait_for_function(
+                        """expectedCount => {
+                            const typingCount = document.querySelectorAll('.chatbot-message--typing').length;
+                            const botCount = document.querySelectorAll('.chatbot-message--bot').length;
+                            return typingCount === 0 && botCount >= expectedCount;
+                        }""",
+                        arg=prompt_count_before + 1,
+                        timeout=8000,
+                    )
+                    prompt_reply = page.locator(".chatbot-message--bot").last.inner_text().strip()
+                    assert_contains(prompt_reply, ["projects", "resume", "backend"], "Starter prompt reply")
+                    print("PASS chatbot starter prompt click")
+
+                    suggestion_count_before = page.locator(".chatbot-message--bot").count()
+                    page.locator(".chatbot-suggestion").first.click()
+                    page.wait_for_function(
+                        """expectedCount => {
+                            const typingCount = document.querySelectorAll('.chatbot-message--typing').length;
+                            const botCount = document.querySelectorAll('.chatbot-message--bot').length;
+                            return typingCount === 0 && botCount >= expectedCount;
+                        }""",
+                        arg=suggestion_count_before + 1,
+                        timeout=8000,
+                    )
+                    suggestion_reply = page.locator(".chatbot-message--bot").last.inner_text().strip()
+                    assert_contains(suggestion_reply, ["smart waste", "coffee shop", "deepfake"], "Quick reply click")
+                    print("PASS chatbot quick reply click")
 
                     for question, expected_snippets in CHATBOT_CASES:
                         reply_locator = ask_chatbot(page, question)

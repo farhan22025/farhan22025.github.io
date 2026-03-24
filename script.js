@@ -23,6 +23,7 @@ const chatbotClose = document.getElementById("chatbot-close");
 const chatbotClear = document.getElementById("chatbot-clear");
 const chatbotScaleDown = document.getElementById("chatbot-scale-down");
 const chatbotScaleUp = document.getElementById("chatbot-scale-up");
+const chatbotScaleLabel = document.getElementById("chatbot-scale-label");
 const chatbotPromptGroups = document.getElementById("chatbot-prompt-groups");
 const chatbotMessages = document.getElementById("chatbot-messages");
 const chatbotSuggestions = document.getElementById("chatbot-suggestions");
@@ -370,6 +371,7 @@ function updateChatbotScaleButtons() {
   const currentIndex = chatbotScaleSteps.indexOf(chatbotState.scale);
   const safeIndex = currentIndex === -1 ? 1 : currentIndex;
   const currentLabel = chatbotScaleSteps[safeIndex];
+  const currentLabelShort = currentLabel === "compact" ? "S" : currentLabel === "comfortable" ? "L" : "M";
 
   if (chatbotScaleDown) {
     chatbotScaleDown.title =
@@ -389,6 +391,10 @@ function updateChatbotScaleButtons() {
       "aria-label",
       `Increase chatbot size. Current size is ${currentLabel}.`
     );
+  }
+
+  if (chatbotScaleLabel) {
+    chatbotScaleLabel.textContent = `Size ${currentLabelShort}`;
   }
 }
 
@@ -1229,6 +1235,23 @@ function createChatLink(link) {
   return anchor;
 }
 
+function createAssistantAvatar(intentId = null) {
+  const persona = getAssistantPersona(intentId);
+  const avatarWrap = document.createElement("div");
+  avatarWrap.className = "chatbot-message__avatar-wrap";
+
+  const avatar = document.createElement("img");
+  avatar.className = "chatbot-message__avatar";
+  avatar.src = persona.avatar;
+  avatar.alt = "";
+  avatarWrap.appendChild(avatar);
+
+  return {
+    persona,
+    element: avatarWrap
+  };
+}
+
 function createChatIdentity(role, intentId = null) {
   if (role === "user") {
     const label = document.createElement("span");
@@ -1238,15 +1261,6 @@ function createChatIdentity(role, intentId = null) {
   }
 
   const persona = getAssistantPersona(intentId);
-  const identityHead = document.createElement("div");
-  identityHead.className = "chatbot-message__head";
-
-  const avatar = document.createElement("img");
-  avatar.className = "chatbot-message__avatar";
-  avatar.src = persona.avatar;
-  avatar.alt = "";
-  identityHead.appendChild(avatar);
-
   const identity = document.createElement("div");
   identity.className = "chatbot-message__identity";
 
@@ -1260,8 +1274,19 @@ function createChatIdentity(role, intentId = null) {
   roleLine.textContent = persona.role;
   identity.appendChild(roleLine);
 
-  identityHead.appendChild(identity);
-  return identityHead;
+  return identity;
+}
+
+function createChatBubble(role, intentId = null) {
+  const bubble = document.createElement("div");
+  bubble.className = `chatbot-bubble chatbot-bubble--${role}`;
+
+  if (role === "bot") {
+    bubble.dataset.assistantPersona = getAssistantPersona(intentId).id;
+  }
+
+  bubble.appendChild(createChatIdentity(role, intentId));
+  return bubble;
 }
 
 function createChatMessage(role, text, links = [], options = {}) {
@@ -1272,12 +1297,13 @@ function createChatMessage(role, text, links = [], options = {}) {
   const article = document.createElement("article");
   article.className = `chatbot-message chatbot-message--${role}`;
   const intentId = options.intentId || null;
+  const bubble = createChatBubble(role, intentId);
 
   if (role === "bot") {
-    article.dataset.assistantPersona = getAssistantPersona(intentId).id;
+    const avatarNode = createAssistantAvatar(intentId);
+    article.dataset.assistantPersona = avatarNode.persona.id;
+    article.appendChild(avatarNode.element);
   }
-
-  article.appendChild(createChatIdentity(role, intentId));
 
   String(text || "")
     .split(/\n+/)
@@ -1285,16 +1311,17 @@ function createChatMessage(role, text, links = [], options = {}) {
     .forEach((paragraphText) => {
       const paragraph = document.createElement("p");
       paragraph.textContent = paragraphText;
-      article.appendChild(paragraph);
+      bubble.appendChild(paragraph);
     });
 
   if (links.length) {
     const linkRow = document.createElement("div");
     linkRow.className = "chatbot-message__links";
     links.forEach((link) => linkRow.appendChild(createChatLink(link)));
-    article.appendChild(linkRow);
+    bubble.appendChild(linkRow);
   }
 
+  article.appendChild(bubble);
   chatbotMessages.appendChild(article);
   scrollChatToBottom();
   return article;
@@ -1307,8 +1334,10 @@ function createTypingMessage(intentId = null) {
 
   const article = document.createElement("article");
   article.className = "chatbot-message chatbot-message--bot chatbot-message--typing";
-  article.dataset.assistantPersona = getAssistantPersona(intentId).id;
-  article.appendChild(createChatIdentity("bot", intentId));
+  const avatarNode = createAssistantAvatar(intentId);
+  const bubble = createChatBubble("bot", intentId);
+  article.dataset.assistantPersona = avatarNode.persona.id;
+  article.appendChild(avatarNode.element);
 
   const typing = document.createElement("div");
   typing.className = "chatbot-typing";
@@ -1317,7 +1346,8 @@ function createTypingMessage(intentId = null) {
     typing.appendChild(document.createElement("span"));
   }
 
-  article.appendChild(typing);
+  bubble.appendChild(typing);
+  article.appendChild(bubble);
   chatbotMessages.appendChild(article);
   scrollChatToBottom();
   return article;

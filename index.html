@@ -1077,12 +1077,15 @@
             <p id="chatbot-meta">Loading site knowledge...</p>
           </div>
           <div class="chatbot-panel__actions">
-            <button class="chatbot-secondary" id="chatbot-scale-down" type="button" aria-label="Reduce chatbot size">
-              A-
-            </button>
-            <button class="chatbot-secondary" id="chatbot-scale-up" type="button" aria-label="Increase chatbot size">
-              A+
-            </button>
+            <div class="chatbot-scale-group" role="group" aria-label="Chat size controls">
+              <button class="chatbot-secondary" id="chatbot-scale-down" type="button" aria-label="Reduce chatbot size">
+                A-
+              </button>
+              <span class="chatbot-scale-label" id="chatbot-scale-label">Size M</span>
+              <button class="chatbot-secondary" id="chatbot-scale-up" type="button" aria-label="Increase chatbot size">
+                A+
+              </button>
+            </div>
             <button class="chatbot-secondary" id="chatbot-clear" type="button">
               Clear
             </button>
