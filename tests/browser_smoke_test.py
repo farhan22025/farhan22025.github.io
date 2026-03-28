@@ -119,6 +119,10 @@ def run() -> int:
                     assert brand_src and "farhan-profile.png" in brand_src, (
                         f"Brand avatar is missing the real profile photo: {brand_src}"
                     )
+                    brand_mark_width = page.locator(".brand-mark").bounding_box()["width"]
+                    assert brand_mark_width >= 40, (
+                        f"Brand avatar collapsed too narrowly in the nav: {brand_mark_width}"
+                    )
                     print("PASS brand avatar uses profile photo")
 
                     cta_before = page.locator(".nav-link--cta").evaluate(
@@ -150,6 +154,12 @@ def run() -> int:
                     page.wait_for_timeout(250)
                     theme_after = page.locator("html").get_attribute("data-theme")
                     assert theme_before != theme_after, "Theme toggle did not change the theme."
+                    light_timeline_background = page.locator(".timeline-card").first.evaluate(
+                        "el => getComputedStyle(el).backgroundImage"
+                    )
+                    assert "255, 255, 255" in light_timeline_background, (
+                        f"Light theme activity cards still look dark: {light_timeline_background}"
+                    )
                     print(f"PASS theme toggle: {theme_before} -> {theme_after}")
 
                     scroll_before = page.evaluate("() => window.scrollY")
