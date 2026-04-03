@@ -5,8 +5,10 @@
 This repository contains Farhan Alam's live portfolio website, supporting frontend prototypes, a small Python game project, and a structured workspace for academic and personal software engineering work.
 
 Live portfolio:
-
+V1:
 [https://farhan22025.github.io/](https://farhan22025.github.io/)
+V2:
+https://farhanalamniloy.replit.app/
 
 Main contents of this repository:
 
