@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+/* ─── DESIGN TOKENS ─────────────────────────────────────── */
+:root {
+  --bg:           #04050a;
+  --bg-panel:     rgba(8, 12, 24, 0.82);
+  --bg-card:      rgba(10, 17, 35, 0.75);
+  --primary:      #00f5c8;
+  --primary-dim:  rgba(0, 245, 200, 0.15);
+  --primary-glow: rgba(0, 245, 200, 0.35);
+  --accent:       #7b61ff;
+  --accent-dim:   rgba(123, 97, 255, 0.15);
+  --danger:       #ff2d55;
+  --danger-dim:   rgba(255, 45, 85, 0.15);
+  --danger-glow:  rgba(255, 45, 85, 0.4);
+  --safe:         #22ff7a;
+  --safe-dim:     rgba(34, 255, 122, 0.12);
+  --safe-glow:    rgba(34, 255, 122, 0.4);
+  --text:         #e8edf5;
+  --text-muted:   #5a6a85;
+  --text-dim:     #8899b0;
+  --border:       rgba(0, 245, 200, 0.12);
+  --border-dim:   rgba(255,255,255,0.06);
+  --font-display: 'Orbitron', monospace;
+  --font-mono:    'Share Tech Mono', monospace;
+  --font-body:    'Rajdhani', sans-serif;
+  --radius:       10px;
+  --radius-lg:    16px;
+}
+
+/* ─── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── ANIMATED BACKGROUND ───────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,245,200,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,200,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  animation: gridDrift 60s linear infinite;
+}
+@keyframes gridDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(0,245,200,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 85% 75%, rgba(123,97,255,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255,45,85,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--primary-dim); border-radius: 3px; }
+
+/* ─── UTILITY ────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+.accent          { color: var(--primary); }
+.accent-purple   { color: var(--accent); }
+.accent-danger   { color: var(--danger); }
+.accent-safe     { color: var(--safe); }
+
+button { cursor: pointer; font-family: var(--font-body); border: none; background: none; }
+
+/* ─── SCAN-LINE OVERLAY ──────────────────────────────────── */
+.scanlines {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.07) 2px,
+    rgba(0, 0, 0, 0.07) 4px
+  );
+}

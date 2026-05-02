@@ -1,0 +1,23 @@
+datasets
+-CASIA2
+--AU-Image Data
+--CASIA 2 Groundtruth-Image Data
+--Tp-Image Data
+-CG1050
+--TRAINING_CG-1050--Image Data
+--VALIDATION_CG-1050-Image Data
+-CIFAKE
+--test-
+---REAL-Image Data
+---FAKE-Image Data
+--train
+---REAL-Image Data
+---FAKE-Image Data
+-CoMoFoD_small_v2-Image Data
+-DETECTAIVSHUMAN
+--test
+---fake
+---real
+--train
+---fake
+---real

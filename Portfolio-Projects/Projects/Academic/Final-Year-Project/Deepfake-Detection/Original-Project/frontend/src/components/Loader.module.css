@@ -1,0 +1,60 @@
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(4, 5, 10, 0.93);
+  backdrop-filter: blur(16px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1.8rem;
+  z-index: 500;
+}
+
+.box {
+  position: relative;
+  width: 100px; height: 100px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.ringOuter {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #00f5c8;
+  border-right-color: rgba(0,245,200,0.2);
+  animation: spinCW 1.2s linear infinite;
+  box-shadow: 0 0 20px rgba(0,245,200,0.2);
+}
+.ringInner {
+  position: absolute; inset: 16px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #7b61ff;
+  border-left-color: rgba(123,97,255,0.2);
+  animation: spinCCW 0.9s linear infinite;
+}
+
+@keyframes spinCW  { to { transform: rotate(360deg);  } }
+@keyframes spinCCW { to { transform: rotate(-360deg); } }
+
+.iconCenter { position: relative; z-index: 1; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+
+.label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 4px; color: #00f5c8;
+  text-shadow: 0 0 12px rgba(0,245,200,0.5);
+}
+
+.lines {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  text-align: left; min-width: 340px;
+}
+.line {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: #2e3d55;
+  opacity: 0;
+  animation: appear 0.5s ease forwards;
+}
+@keyframes appear { to { opacity:1; color:#5a6a85; } }
+.arrow { color: #00f5c8; margin-right: 0.4rem; }
