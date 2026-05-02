@@ -1,0 +1,166 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* Scanline overlay */
+.scanlines {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+  );
+}
+
+/* Layout: main + sidebar */
+.layout {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 2rem 0;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+/* Hero */
+.hero { text-align: center; padding: 0.5rem 0 0.5rem; }
+.heroTitle {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #e8edf5;
+  margin-bottom: 0.6rem;
+}
+.accent { color: #00f5c8; text-shadow: 0 0 18px rgba(0,245,200,0.4); }
+.heroSub {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  color: #5a6a85;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Input section */
+.inputSection { display: flex; flex-direction: column; gap: 1.4rem; }
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem;
+}
+
+/* Error banner */
+.errorBanner {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: rgba(255,45,85,0.1);
+  border: 1px solid rgba(255,45,85,0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1.1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: #ff6b8a;
+}
+
+/* Result section */
+.resultSection { display: flex; flex-direction: column; gap: 1.5rem; }
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding-bottom: 1rem;
+}
+.newScanBtn {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: 'Orbitron', monospace; font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 2px;
+  color: #00f5c8; background: rgba(0,245,200,0.08);
+  border: 1px solid rgba(0,245,200,0.25); border-radius: 8px;
+  padding: 0.65rem 1.4rem; transition: all 0.2s;
+}
+.newScanBtn:hover { background: rgba(0,245,200,0.18); transform: translateX(-2px); }
+.actionHint {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; color: #2e3d55; letter-spacing: 1px;
+}
+
+/* Footer */
+.footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem; color: #2e3d55; letter-spacing: 1px;
+}
+
+@media(max-width: 1100px) {
+  .layout { flex-direction: column; }
+}
+@media(max-width: 700px) {
+  .inputGrid { grid-template-columns: 1fr; }
+  .layout { padding: 1rem; }
+  .footer { flex-direction: column; gap: 0.3rem; text-align: center; }
+}
+
+/* ─── Global drag-over overlay ─── */
+.globalDragOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 8, 20, 0.82);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  animation: fadeInOverlay 0.15s ease;
+}
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.globalDragBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  border: 2px dashed #00f5c8;
+  border-radius: 20px;
+  padding: 3.5rem 5rem;
+  color: #00f5c8;
+  animation: pulseBorder 0.9s ease-in-out infinite alternate;
+}
+@keyframes pulseBorder {
+  from { box-shadow: 0 0 20px rgba(0,245,200,0.2), inset 0 0 20px rgba(0,245,200,0.04); }
+  to   { box-shadow: 0 0 55px rgba(0,245,200,0.55), inset 0 0 30px rgba(0,245,200,0.1); }
+}
+
+.globalDragTitle {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(0,245,200,0.6);
+}
+.globalDragSub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: #5a8a7a;
+  letter-spacing: 2px;
+}

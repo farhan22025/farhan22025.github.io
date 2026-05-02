@@ -1,0 +1,32 @@
+# Virtual Environments
+venv/
+venv_old/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Node Modules
+backend/node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Environment Variables
+.env
+backend/.env
+
+# Large Model Checkpoints (GitHub limits files to 100MB)
+*.pth
+*.pt
+
+# Massive Datasets
+datasets/
+dataset/
+data/
+
+# Build artifacts & Logs
+build/
+dist/
+*.spec
+logs/
+sqat_assets/

@@ -1,0 +1,102 @@
+/* ─── Card shell ─── */
+.card {
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+  transition: box-shadow 0.3s;
+}
+.cardFake {
+  background: rgba(255, 30, 65, 0.06);
+  border-color: rgba(255, 30, 65, 0.22);
+  box-shadow: 0 0 24px rgba(255, 30, 65, 0.08);
+}
+.cardReal {
+  background: rgba(0, 245, 200, 0.05);
+  border-color: rgba(0, 245, 200, 0.2);
+  box-shadow: 0 0 24px rgba(0, 245, 200, 0.07);
+}
+
+/* ─── Label bar ─── */
+.labelBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.85rem 1.2rem;
+}
+.labelBarFake { background: rgba(255, 30, 65, 0.12); }
+.labelBarReal { background: rgba(0, 245, 200, 0.08); }
+
+.labelLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.labelIcon {
+  width: 32px; height: 32px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.iconFake { background: rgba(255,30,65,0.14); color: #ff2d55; border: 1px solid rgba(255,30,65,0.3); }
+.iconReal { background: rgba(0,245,200,0.1); color: #00f5c8; border: 1px solid rgba(0,245,200,0.25); }
+
+.labelTitle {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  color: #e8edf5;
+}
+
+.badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border-radius: 4px;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+}
+.badgeFake { color: #ff6b8a; background: rgba(255,30,65,0.14); border: 1px solid rgba(255,30,65,0.3); }
+.badgeReal { color: #00f5c8; background: rgba(0,245,200,0.1); border: 1px solid rgba(0,245,200,0.25); }
+
+/* ─── Divider ─── */
+.divider { height: 1px; margin: 0; }
+.dividerFake { background: linear-gradient(90deg, rgba(255,30,65,0.35) 0%, transparent 100%); }
+.dividerReal { background: linear-gradient(90deg, rgba(0,245,200,0.3) 0%, transparent 100%); }
+
+/* ─── Bullets ─── */
+.bullets {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+}
+.bulletFake { color: #c5798a; }
+.bulletReal { color: #6ab8ac; }
+
+.dot {
+  flex-shrink: 0;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-top: 5px;
+}
+.dotFake { background: #ff2d55; box-shadow: 0 0 6px rgba(255,45,85,0.6); }
+.dotReal { background: #00f5c8; box-shadow: 0 0 6px rgba(0,245,200,0.5); }

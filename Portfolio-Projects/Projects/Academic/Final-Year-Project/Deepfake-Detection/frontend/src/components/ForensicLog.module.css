@@ -1,0 +1,55 @@
+.log {
+  background: rgba(4, 7, 14, 0.9);
+  border: 1px solid rgba(0,245,200,0.12);
+  border-radius: 14px;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.logHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1.2rem;
+  border-bottom: 1px solid rgba(0,245,200,0.1);
+  background: rgba(0,245,200,0.04);
+}
+.logTitle {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.62rem; letter-spacing: 2.5px; color: #00f5c8;
+}
+.session { font-size: 0.6rem; color: #3a4a60; }
+
+.logBody {
+  padding: 1rem 1.2rem;
+  display: flex; flex-direction: column; gap: 0.55rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.entry, .sysLine {
+  display: flex; align-items: flex-start; gap: 0.6rem; flex-wrap: wrap;
+}
+
+.ts { font-size: 0.6rem; color: #2e3d55; white-space: nowrap; padding-top: 1px; }
+
+.channel {
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px;
+  border-radius: 3px; padding: 1px 6px; white-space: nowrap;
+}
+.chanImg { color:#00f5c8; background:rgba(0,245,200,0.1);  border:1px solid rgba(0,245,200,0.2); }
+.chanTxt { color:#7b61ff; background:rgba(123,97,255,0.1); border:1px solid rgba(123,97,255,0.2); }
+.chanSys { color:#5a6a85; background:rgba(90,106,133,0.1); border:1px solid rgba(90,106,133,0.15); }
+
+.noteText { font-size: 0.72rem; line-height: 1.5; flex: 1; }
+.noteFake { color: #ff6b8a; }
+.noteSafe { color: #7bb89a; }
+
+.sys    { color:#5a6a85; font-size:0.58rem; padding-top:1px; }
+.sysTxt { font-size:0.72rem; color:#3a4a60; line-height:1.5; }
+
+.cursor {
+  color: #00f5c8;
+  font-size: 0.8rem;
+  animation: blink 1.1s step-end infinite;
+  margin-top: 0.2rem;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
