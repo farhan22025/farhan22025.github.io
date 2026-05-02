@@ -1,0 +1,46 @@
+=============================================================
+         MULTIMODAL DEEPFAKE DEFENSE DATASETS
+=============================================================
+Total Combined Volume: ~55 GB
+
+-------------------------------------------------------------
+1. VISION / IMAGE DATASETS (Deepfake Detection)
+-------------------------------------------------------------
+These datasets consist of highly realistic generated images, GAN 
+synthesis, splicing, copy-move forgeries, and authentic photography.
+
+- CASIA V2 (CASIA2)
+  Features authentic images and sophisticated copy-move/splicing forgeries.
+- CG-1050
+  Computer-generated versus photographic image benchmark.
+- CIFAKE
+  Real and AI-generated synthetic images classification dataset.
+- CoMoFoD (small_v2)
+  Copy-Move Forgery Dataset focusing on spatial manipulations.
+- DETECTAIVSHUMAN
+  Modern contrastive dataset pairing highly realistic AI generations against human photography.
+
+-------------------------------------------------------------
+2. NLP / TEXT DATASETS (AI Authorship & Linguistics)
+-------------------------------------------------------------
+These datasets are sourced from HuggingFace to train the sequence 
+classification model to detect LLM token probability patterns.
+
+[Verified Human Text Baseline]
+- BookCorpus (rojagtap/bookcorpus)
+- PG-19 (emozilla/pg19)
+- WikiText-103 (Salesforce/wikitext)
+- Reddit Title-Body (sentence-transformers/reddit-title-body)
+
+[AI vs. Human Contrastive Sets]
+- HC3 (Human ChatGPT Comparison Corpus - Hello-SimpleAI/HC3)
+- ArguGPT (SJTU-CL/ArguGPT)
+- APT (tasksource/apt)
+
+[Instruction Fine-Tuning & Prompt Response]
+- PAWS-X (hgissbkh/paws-x)
+- Alpaca (tatsu-lab/alpaca)
+- Dolly 15k (databricks/databricks-dolly-15k)
+
+[Adversarial & Edge Cases]
+- Real Toxicity Prompts (allenai/real-toxicity-prompts)
