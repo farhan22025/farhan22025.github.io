@@ -9,8 +9,8 @@ Live portfolio:
 V1:
 [https://farhan22025.github.io/](https://farhan22025.github.io/)
 
-V2:
-https://farhanalamniloy.replit.app/
+V2:[
+https://farhanalamniloy.replit.app/](https://farhan22025.github.io/Github_Portofilo_Repository_Part_2/)
 
 Main contents of this repository:
 
