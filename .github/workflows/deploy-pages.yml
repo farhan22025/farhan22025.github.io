@@ -1,0 +1,93 @@
+name: Deploy V2 portfolio to site root
+
+# Publishes the V2 portfolio at https://farhan22025.github.io (no subpath),
+# and keeps the old V1 prototype available at /v1/.
+#
+# V2's source stays in its own repo. This workflow checks it out, builds it
+# with BASE_PATH=/ instead of /Github_Portofilo_Repository_Part_2/, and
+# publishes the result here. Nothing in the V2 repo needs to change.
+
+on:
+  push:
+    branches: [main]
+  # V2 lives in another repo, so a push there cannot trigger this build.
+  # After editing V2, come here and run this workflow manually:
+  #   Actions -> Deploy V2 portfolio to site root -> Run workflow
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the V2 portfolio source
+        uses: actions/checkout@v4
+        with:
+          repository: farhan22025/Github_Portofilo_Repository_Part_2
+          ref: main
+          path: v2
+
+      - name: Check out this repo (for the V1 archive)
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        working-directory: v2
+        run: corepack pnpm install --config.minimumReleaseAge=0 --ignore-scripts
+
+      # The one line that matters. V2's own repo builds with
+      # BASE_PATH=/Github_Portofilo_Repository_Part_2/ because it is served
+      # from a subpath. Served from the domain root, the base must be "/".
+      - name: Build V2 for the domain root
+        working-directory: v2
+        run: BASE_PATH=/ corepack pnpm --filter @workspace/portfolio build
+
+      - name: Archive the V1 prototype at /v1/
+        run: |
+          OUT="v2/artifacts/portfolio/dist/public"
+          mkdir -p "$OUT/v1"
+          for item in index.html script.js styles.css chatbot-data.js assets; do
+            if [ -e "site/$item" ]; then
+              cp -r "site/$item" "$OUT/v1/"
+            fi
+          done
+          # Stop GitHub Pages from running Jekyll, which would drop _-prefixed files.
+          touch "$OUT/.nojekyll"
+          echo "Published files:"
+          ls -la "$OUT"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: v2/artifacts/portfolio/dist/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
