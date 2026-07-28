@@ -1,18 +1,18 @@
-name: Deploy V2 portfolio to site root
+name: Deploy portfolio to site root
 
-# Publishes the V2 portfolio at https://farhan22025.github.io (no subpath),
-# and keeps the old V1 prototype available at /v1/.
+# Publishes the Next.js portfolio at https://farhan22025.github.io, and keeps
+# the original V1 prototype available at /v1/.
 #
-# V2's source stays in its own repo. This workflow checks it out, builds it
-# with BASE_PATH=/ instead of /Github_Portofilo_Repository_Part_2/, and
-# publishes the result here. Nothing in the V2 repo needs to change.
+# The portfolio's source lives in its own repo (farhan22025/portfolio). This
+# workflow checks it out, builds a static export with an empty BASE_PATH so it
+# serves from the domain root, and publishes the result here.
 
 on:
   push:
     branches: [main]
-  # V2 lives in another repo, so a push there cannot trigger this build.
-  # After editing V2, come here and run this workflow manually:
-  #   Actions -> Deploy V2 portfolio to site root -> Run workflow
+  # The portfolio lives in another repo, so a push there cannot trigger this
+  # build. After changing it, run this workflow manually:
+  #   Actions -> Deploy portfolio to site root -> Run workflow
   workflow_dispatch:
 
 permissions:
@@ -24,19 +24,16 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the V2 portfolio source
+      - name: Check out the portfolio source
         uses: actions/checkout@v4
         with:
-          repository: farhan22025/Github_Portofilo_Repository_Part_2
+          repository: farhan22025/portfolio
           ref: main
-          path: v2
+          path: app
 
       - name: Check out this repo (for the V1 archive)
         uses: actions/checkout@v4
@@ -47,39 +44,43 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Setup pnpm
-        run: corepack enable
+          cache: npm
+          cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
-        working-directory: v2
-        run: corepack pnpm install --config.minimumReleaseAge=0 --ignore-scripts
+        working-directory: app
+        run: npm ci --no-audit --no-fund
 
-      # The one line that matters. V2's own repo builds with
-      # BASE_PATH=/Github_Portofilo_Repository_Part_2/ because it is served
-      # from a subpath. Served from the domain root, the base must be "/".
-      - name: Build V2 for the domain root
-        working-directory: v2
-        run: BASE_PATH=/ corepack pnpm --filter @workspace/portfolio build
+      - name: Type check
+        working-directory: app
+        run: npm run typecheck
+
+      # Empty BASE_PATH => assets resolve from "/", which is correct for a
+      # user site served at the domain root.
+      - name: Build static export
+        working-directory: app
+        env:
+          # Content is read from Postgres at build time when this secret exists.
+          # Without it the build still succeeds, using the checked-in seed data.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BASE_PATH: ""
+        run: npm run build:static
 
       - name: Archive the V1 prototype at /v1/
         run: |
-          OUT="v2/artifacts/portfolio/dist/public"
+          OUT="app/out"
           mkdir -p "$OUT/v1"
           for item in index.html script.js styles.css chatbot-data.js assets; do
-            if [ -e "site/$item" ]; then
-              cp -r "site/$item" "$OUT/v1/"
-            fi
+            if [ -e "site/$item" ]; then cp -r "site/$item" "$OUT/v1/"; fi
           done
-          # Stop GitHub Pages from running Jekyll, which would drop _-prefixed files.
           touch "$OUT/.nojekyll"
-          echo "Published files:"
+          echo "Publishing:"
           ls -la "$OUT"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: v2/artifacts/portfolio/dist/public
+          path: app/out
 
   deploy:
     needs: build
