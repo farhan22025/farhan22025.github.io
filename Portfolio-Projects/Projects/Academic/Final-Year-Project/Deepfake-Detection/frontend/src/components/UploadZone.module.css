@@ -1,0 +1,179 @@
+.card {
+  background: rgba(10, 17, 35, 0.75);
+  border: 1px solid rgba(0, 245, 200, 0.12);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(0, 245, 200, 0.25); }
+
+/* ─── Card header ─── */
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.headLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.channelIcon {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.visionIcon { background: rgba(0,245,200,0.1); color: #00f5c8; border: 1px solid rgba(0,245,200,0.2); }
+.cardTitle  { font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 2px; color: #e8edf5; }
+.cardSub    { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: #5a6a85; margin-top: 2px; }
+.badge      { font-family: 'Orbitron', monospace; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; padding: 0.3rem 0.6rem; border-radius: 5px; }
+.visionBadge { background: rgba(0,245,200,0.1); color: #00f5c8; border: 1px solid rgba(0,245,200,0.25); }
+
+/* ─── Drop area ─── */
+.dropArea {
+  position: relative;
+  border: 1.5px dashed rgba(0,245,200,0.22);
+  border-radius: 10px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  background: rgba(0,245,200,0.02);
+}
+.dropArea:hover, .dropArea.active {
+  border-color: #00f5c8;
+  background: rgba(0,245,200,0.06);
+  box-shadow: 0 0 24px rgba(0,245,200,0.1);
+}
+.dropArea.hasFile { cursor: default; border-style: solid; border-color: rgba(0,245,200,0.3); }
+/* Still show drag-active glow even when file is loaded */
+.dropArea.hasFile.active {
+  border-color: #00f5c8;
+  box-shadow: 0 0 32px rgba(0,245,200,0.25);
+}
+
+/* Corner brackets */
+.corner {
+  position: absolute;
+  width: 14px; height: 14px;
+  border-color: #00f5c8;
+  border-style: solid;
+  opacity: 0.7;
+}
+.corner[data-pos="tl"] { top: 6px; left: 6px; border-width: 2px 0 0 2px; border-radius: 2px 0 0 0; }
+.corner[data-pos="tr"] { top: 6px; right: 6px; border-width: 2px 2px 0 0; border-radius: 0 2px 0 0; }
+.corner[data-pos="bl"] { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; border-radius: 0 0 0 2px; }
+.corner[data-pos="br"] { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; border-radius: 0 0 2px 0; }
+
+/* ─── Drop inner ─── */
+.dropInner {
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  padding: 2rem 1rem; text-align: center;
+}
+.dropIconWrap {
+  color: rgba(0,245,200,0.4);
+  transition: color 0.3s, transform 0.3s;
+}
+.iconActive { color: #00f5c8; transform: translateY(-4px); }
+.dropLabel  { font-family: 'Orbitron', monospace; font-size: 0.78rem; letter-spacing: 2px; color: #8899b0; }
+.dropFormats { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: #5a6a85; }
+
+.browseBtn {
+  margin-top: 0.4rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #00f5c8;
+  border: 1px solid rgba(0,245,200,0.3);
+  background: rgba(0,245,200,0.08);
+  border-radius: 6px;
+  padding: 0.55rem 1.2rem;
+  transition: all 0.2s;
+}
+.browseBtn:hover { background: rgba(0,245,200,0.18); box-shadow: 0 0 14px rgba(0,245,200,0.25); }
+
+/* ─── Preview ─── */
+.previewWrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem;
+}
+
+/* Dim overlay when dragging a replacement image */
+.replaceOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(0, 15, 30, 0.80);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  color: #00f5c8;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  animation: pulseOverlay 1s ease-in-out infinite alternate;
+}
+@keyframes pulseOverlay {
+  from { box-shadow: inset 0 0 0 2px rgba(0,245,200,0.4); }
+  to   { box-shadow: inset 0 0 0 2px rgba(0,245,200,1); }
+}
+
+.previewDim { opacity: 0.35; transition: opacity 0.2s; }
+.preview {
+  max-height: 200px;
+  max-width: 100%;
+  border-radius: 6px;
+  object-fit: contain;
+}
+.previewMeta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #5a6a85;
+  display: flex; gap: 1rem;
+}
+
+/* ─── Clear ─── */
+.clearBtn {
+  align-self: flex-end;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #ff2d55;
+  border: 1px solid rgba(255,45,85,0.25);
+  background: rgba(255,45,85,0.07);
+  border-radius: 5px;
+  padding: 0.3rem 0.75rem;
+  transition: all 0.2s;
+}
+.clearBtn:hover { background: rgba(255,45,85,0.16); }
+
+/* ─── Chips ─── */
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.5px;
+  color: #5a6a85;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px;
+  padding: 0.2rem 0.55rem;
+}

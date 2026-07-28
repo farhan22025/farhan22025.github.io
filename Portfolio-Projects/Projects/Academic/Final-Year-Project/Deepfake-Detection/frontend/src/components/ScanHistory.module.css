@@ -1,0 +1,86 @@
+.sidebar {
+  background: rgba(8,12,24,0.85);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  backdrop-filter: blur(12px);
+  min-width: 240px;
+  max-height: calc(100vh - 160px);
+  overflow: hidden;
+}
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 0.6rem;
+}
+.title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 2.5px; color: #5a6a85;
+}
+.count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem; color: #00f5c8;
+  background: rgba(0,245,200,0.1);
+  border: 1px solid rgba(0,245,200,0.2);
+  border-radius: 10px; padding: 1px 8px;
+}
+
+.loading, .empty {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem; color: #2e3d55;
+  text-align: center; padding: 1rem 0;
+  letter-spacing: 1px;
+}
+
+.offline {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem; color: #5a6a85;
+  padding: 0.8rem 0;
+}
+.offlineDot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #ff2d55; flex-shrink: 0;
+}
+
+.list {
+  display: flex; flex-direction: column; gap: 0.55rem;
+  overflow-y: auto; flex: 1;
+}
+
+.record {
+  border-radius: 8px; padding: 0.7rem 0.85rem;
+  border-left: 3px solid transparent;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.2s;
+}
+.record:hover { background: rgba(255,255,255,0.055); }
+.recFake { border-left-color: #ff2d55; }
+.recReal { border-left-color: #22ff7a; }
+
+.recTop {
+  display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;
+}
+.recVerdict {
+  font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; font-weight: 700; flex: 1;
+}
+.verdFake { color: #ff2d55; }
+.verdReal { color: #22ff7a; }
+.recConf  { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: #8899b0; }
+
+.delBtn {
+  font-size: 0.55rem; color: #3a4a60;
+  border: none; background: none; cursor: pointer;
+  transition: color 0.2s; padding: 2px 4px;
+}
+.delBtn:hover { color: #ff2d55; }
+
+.recMeta {
+  display: flex; flex-direction: column; gap: 1px;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.56rem; color: #3a4a60;
+}

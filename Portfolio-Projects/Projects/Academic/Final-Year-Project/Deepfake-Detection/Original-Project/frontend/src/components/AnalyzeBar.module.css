@@ -1,0 +1,69 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: rgba(10, 17, 35, 0.75);
+  border: 1px solid rgba(0,245,200,0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  backdrop-filter: blur(12px);
+}
+
+.modeBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.modeLabel {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #5a6a85;
+}
+.modeValue {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #3a4a60;
+  transition: color 0.3s;
+}
+.modeReady { color: #00f5c8; }
+
+/* Scan button */
+.scanBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #3a4a60;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 0.75rem 1.8rem;
+  transition: all 0.3s ease;
+  cursor: not-allowed;
+  white-space: nowrap;
+}
+.scanReady {
+  color: #00f5c8;
+  background: rgba(0,245,200,0.08);
+  border-color: rgba(0,245,200,0.35);
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0,245,200,0.1);
+}
+.scanReady:hover {
+  background: rgba(0,245,200,0.16);
+  box-shadow: 0 0 30px rgba(0,245,200,0.25);
+  transform: translateY(-1px);
+}
+.scanReady:active { transform: translateY(0); }
+
+@media (max-width: 600px) {
+  .bar { flex-direction: column; align-items: stretch; }
+  .scanBtn { justify-content: center; }
+}

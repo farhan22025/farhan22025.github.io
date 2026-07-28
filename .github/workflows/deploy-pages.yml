@@ -55,8 +55,8 @@ jobs:
         working-directory: app
         run: npm run typecheck
 
-      # Empty BASE_PATH => assets resolve from "/", which is correct for a
-      # user site served at the domain root.
+      # Empty BASE_PATH => assets resolve from "/", correct for a user site
+      # served at the domain root.
       - name: Build static export
         working-directory: app
         env:
@@ -68,14 +68,25 @@ jobs:
 
       - name: Archive the V1 prototype at /v1/
         run: |
+          set -euo pipefail
           OUT="app/out"
           mkdir -p "$OUT/v1"
+          copied=0
           for item in index.html script.js styles.css chatbot-data.js assets; do
-            if [ -e "site/$item" ]; then cp -r "site/$item" "$OUT/v1/"; fi
+            if [ -e "site/$item" ]; then
+              cp -r "site/$item" "$OUT/v1/"
+              copied=$((copied + 1))
+            fi
           done
+          # Fail loudly rather than publishing an empty /v1/. A silent skip here
+          # is what previously made the archive 404 while the step reported success.
+          if [ "$copied" -eq 0 ]; then
+            echo "::error::No V1 files found in site/ - nothing to archive."
+            exit 1
+          fi
+          echo "Archived $copied V1 entries."
           touch "$OUT/.nojekyll"
-          echo "Publishing:"
-          ls -la "$OUT"
+          ls -la "$OUT" "$OUT/v1"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
